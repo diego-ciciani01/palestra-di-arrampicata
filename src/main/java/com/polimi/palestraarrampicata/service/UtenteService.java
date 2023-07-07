@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.time.DateTimeException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 @Service
@@ -38,7 +40,16 @@ public class UtenteService {
             utente.setPassword(requestRegistrazione.getPassword());
             Ruolo ruolo = Ruolo.valueOf(requestRegistrazione.getRuolo().toUpperCase());
             utente.setRuolo(ruolo);
-            utente.setDataDiNascita(LocalDateTime.parse(requestRegistrazione.getDataNascita()));
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDateTime dataNascita;
+            try{
+                System.out.println(requestRegistrazione.getDataNascita());
+                dataNascita = LocalDateTime.parse(requestRegistrazione.getDataNascita(), formatter);
+            }catch (DateTimeException e){
+                throw new RegistrazioneFallita("Formato data di nascita non valido");
+            }
+
+            utente.setDataDiNascita(dataNascita);
             String fotoProfilo = requestRegistrazione.getFotoProfilo();
 
             if(fotoProfilo != null){

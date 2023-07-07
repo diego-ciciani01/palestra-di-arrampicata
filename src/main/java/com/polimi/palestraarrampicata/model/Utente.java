@@ -15,7 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Utente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false) // updatable = false: non permette di modificare l'id
+    @Column(name = "id", nullable = false, updatable = false) // updatable = false: non permette di modiicare l'id
     private Integer id;
 
     @Column(name = "nome")
@@ -76,7 +76,16 @@ public class Utente {
 
     @ManyToOne()
     @JoinColumn(name = "iscritti_palestra")
-    private  Palestra iscrittiPalestra;
+    private Palestra iscrittiPalestra;
+
+    @OneToMany(mappedBy = "istruttoreCorso", fetch = FetchType.LAZY)
+    private List<Corso> corsiTenuti = null;
+
+    @ManyToMany
+    @JoinTable(name="iscrizione", joinColumns =
+    @JoinColumn(name = "utente"), inverseJoinColumns =
+    @JoinColumn(name ="corso"))
+    private List<Corso> corsiIscritto = null;
 
     @Override
     public String toString() {

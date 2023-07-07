@@ -4,8 +4,12 @@ public enum Difficolta {
     FACILE("Facile"),
     MEDIA("Media"),
     DIFFICILE("Difficile"),
-    MOLTO_DIFFICILE("Molto difficile");
+    MOLTO_DIFFICILE("Molto difficile"),
+    PRINCIPIANTI("Principianti"),
 
+    INTERMEDIO("Intermedio"),
+
+    AVANZATO("Avanzato");
     private final String nome;
     Difficolta(String nome) {
         this.nome = nome;

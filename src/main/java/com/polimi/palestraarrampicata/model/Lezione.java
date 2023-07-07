@@ -12,7 +12,7 @@ import java.util.List;
 public class Lezione {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false) // updatable = false: non permette di modificare l'id
+    @Column(name = "id", nullable = false, updatable = false) // updatable = false: non permette di modiicare l'id
     private Integer id;
 
     @Column(name = "data_lezione")

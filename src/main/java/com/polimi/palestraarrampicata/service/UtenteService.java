@@ -1,71 +1,64 @@
 package com.polimi.palestraarrampicata.service;
 
-import com.polimi.palestraarrampicata.dto.request.RequestRegistrazione;
-import com.polimi.palestraarrampicata.exception.RegistrazioneFallita;
-import com.polimi.palestraarrampicata.model.Ruolo;
-import com.polimi.palestraarrampicata.model.Utente;
+
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
+import com.polimi.palestraarrampicata.security.JwtUtils;
+import com.polimi.palestraarrampicata.utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.time.DateTimeException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-
 @Service
-public class UtenteService {
+public class UtenteService implements UserDetailsService {
     @Autowired
     private UtenteRepo utenteRepo;
 
-    public Utente findByUsername(String username) {
-        return utenteRepo.findByUsername(username);
+    @Override
+    public UserDetails loadUserByUsername(String email) throws IllegalStateException {
+        return utenteRepo.findUserByEmail(email).orElseThrow(()-> new IllegalStateException("l'utente non è stato trovato"));
     }
 
-    public Utente registrazione(RequestRegistrazione requestRegistrazione){
-        Utente utente = new Utente();
+    /*
+    public Utente modificaUtente(RequestModificaUtente requestModifica, HttpServletRequest request){
+        Utente utenteLoggato = Utils.getUtenteFromHeader(request, utenteRepo);
+        String oldPassword = utenteLoggato.getPassword();
+        boolean usernameModificato = false;
 
-        try{
-            String username = requestRegistrazione.getUsername();
-            String password = requestRegistrazione.getPassword();
+        String nome = requestModifica.getNome();
+        String cognome = requestModifica.getCognome();
+        String username = requestModifica.getUsername();
+        String email = requestModifica.getEmail();
+        String password = requestModifica.getPassword();
+        String fotoProfilo = requestModifica.getFotoProfilo();
 
-            if (utenteRepo.findByUsernameOrEmail(username, password) != null){
-                throw new RegistrazioneFallita("Username o Email già in uso");
-            }
-            utente.setNome(requestRegistrazione.getNome());
-            utente.setCognome(requestRegistrazione.getCognome());
-            utente.setUsername(requestRegistrazione.getUsername());
-            utente.setEmail(requestRegistrazione.getEmail());
-            utente.setPassword(requestRegistrazione.getPassword());
-            Ruolo ruolo = Ruolo.valueOf(requestRegistrazione.getRuolo().toUpperCase());
-            utente.setRuolo(ruolo);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            LocalDateTime dataNascita;
-            try{
-                System.out.println(requestRegistrazione.getDataNascita());
-                dataNascita = LocalDateTime.parse(requestRegistrazione.getDataNascita(), formatter);
-            }catch (DateTimeException e){
-                throw new RegistrazioneFallita("Formato data di nascita non valido");
-            }
-
-            utente.setDataDiNascita(dataNascita);
-            String fotoProfilo = requestRegistrazione.getFotoProfilo();
-
-            if(fotoProfilo != null){
-                if(fotoProfilo.isBlank()) {
-                    throw new RegistrazioneFallita("La foto profilo, se inserita, non può essere vuota");
-                }
-                byte[] fotoProfiloBytes = Base64.getDecoder().decode(fotoProfilo.getBytes(StandardCharsets.UTF_8));
-                utente.setFotoProfilo(fotoProfiloBytes);
-            }
-            utenteRepo.save(utente);
-
-        }catch (IllegalArgumentException e){
-            throw  new RegistrazioneFallita("il ruolo inserito non è valido");
+        if(utenteRepo.findByUsernameOrEmail(username, email) != null){
+            throw new ModificaFallita("Username o email già in uso");
         }
-        return  utente;
-    }
+        if(nome != null)
+            utenteLoggato.setNome(nome);
+        if(cognome != null)
+            utenteLoggato.setCognome(cognome);
+        if(username != null)
+            utenteLoggato.setUsername(username);
+        if(email != null)
+            utenteLoggato.setUsername(email);
+        if(password != null && !password.equals(oldPassword)) {
+            utenteLoggato.setPassword(password);
+            usernameModificato = true;
+        }
+        if (fotoProfilo != null){
+            byte[] fotoProfiloByte = Base64.getDecoder().decode(fotoProfilo.getBytes(StandardCharsets.UTF_8));
+            utenteLoggato.setFotoProfilo(fotoProfiloByte);
+        }
+        utenteRepo.save(utenteLoggato);
+        return usernameModificato;
 
+    }
+*/
 
 }

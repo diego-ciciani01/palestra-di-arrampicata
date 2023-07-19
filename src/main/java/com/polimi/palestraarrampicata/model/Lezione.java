@@ -29,10 +29,10 @@ public class Lezione {
     private TipologiaLezione tipologiaLezione;
 
     @ManyToMany(mappedBy = "inviti", fetch = FetchType.LAZY)
-    private List<Utente> utentiPartecipanti = null;
+    private List<Utente> utentiPartecipanti;
 
     @ManyToMany(mappedBy = "inviti", fetch = FetchType.LAZY)
-    private List<Utente>  utentiInvitati = null;
+    private List<Utente>  utentiInvitati;
 
     @ManyToOne
     @JoinColumn(name = "iscritto")

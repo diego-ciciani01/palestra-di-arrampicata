@@ -1,42 +1,45 @@
 package com.polimi.palestraarrampicata.dto.request;
 
+import com.polimi.palestraarrampicata.utils.Utils;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 @Data
 public class RequestRegistrazione {
 
-    @NotBlank(message = "il nome non può essere vuoto")
+    @NotNull
+    @NotEmpty
     private String nome;
 
-    @NotBlank(message = "il cognome non può essere vuoto")
+    @NotNull
+    @NotEmpty
     private String cognome;
 
-    @NotBlank(message = "l'username non può essere vuoto")
-    private String username;
-
-    @NotBlank(message = "l'email non può essere vuoto")
+    @NotNull
+    @NotEmpty
     @Pattern(regexp="^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",
             message = "Inserire un indirizzo email valido")
     private String email;
 
-    @NotBlank(message = "la password non può essere vuota")
-    @Size(min = 32, max = 32, message = "L'hash della password deve essere lungo 32 caratteri (MD5 hash)")
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = Utils.REGEX_PASSWORD, message = Utils.ERROR_PASSWORD)
     private String password;
 
-    @NotBlank(message = "la data di nascita non può essere vuota")
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = "dd/MM/yyyy", message = "formato della data non è valido")
     private String dataNascita;
 
-    @NotBlank(message = "il ruolo non può essere vuoto")
+    @NotNull
+    @NotEmpty
     private String ruolo;
 
     private String fotoProfilo;
 
     public  boolean isParametriPresenti(){
-        return nome != null && cognome != null && username != null && email != null && password !=  null && ruolo != null;
+        return nome != null && cognome != null && email != null && password !=  null && ruolo != null;
     }
 
 }

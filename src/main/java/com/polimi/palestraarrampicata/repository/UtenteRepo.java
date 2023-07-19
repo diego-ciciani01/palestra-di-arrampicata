@@ -1,13 +1,13 @@
 package com.polimi.palestraarrampicata.repository;
 
 import com.polimi.palestraarrampicata.model.Utente;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UtenteRepo extends JpaRepository<Utente, Integer> {
-    Utente findByUsernameOrEmail(String username, String email);
+import java.util.Optional;
 
-    Utente findByUsername(String username);
+@Repository
+public interface UtenteRepo extends CrudRepository<Utente, Integer> {
+    Optional<Utente> findUserByEmail(String username);
 }
 

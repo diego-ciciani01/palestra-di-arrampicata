@@ -3,14 +3,10 @@ package com.polimi.palestraarrampicata.controller;
 import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestLogin;
 import com.polimi.palestraarrampicata.dto.request.RequestRegistrazione;
-import com.polimi.palestraarrampicata.dto.response.AuthenticationResponse;
 import com.polimi.palestraarrampicata.exception.LoginFallito;
 import com.polimi.palestraarrampicata.exception.RegistrazioneFallita;
-import com.polimi.palestraarrampicata.model.Utente;
 import com.polimi.palestraarrampicata.service.ProfileService;
-import com.polimi.palestraarrampicata.service.UtenteService;
 import com.polimi.palestraarrampicata.utils.Utils;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +19,7 @@ import javax.validation.Valid;
 @RestController
 @CrossOrigin
 @RequestMapping("/profilo")
-public class UtenteContoller {
+public class ProfiloContoller {
     @Autowired
     private ProfileService profileService;
     @Autowired
@@ -64,6 +60,7 @@ public class UtenteContoller {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 /*
     public ResponseEntity<?> modifica(@Valid @RequestBody RequestModificaUtente requestModifica, BindingResult result, HttpServletRequest request){
         try{

@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Cleanup;
@@ -24,7 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name ="utente")
 public class Utente implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
     @Column(name = "nome")
@@ -70,13 +72,14 @@ public class Utente implements UserDetails {
     @Column
     private boolean accountExpired;
 
+    @JsonBackReference
     @ManyToMany
     @JoinTable(name = "invito", joinColumns =
     @JoinColumn( name = "utente") , inverseJoinColumns =
     @JoinColumn(name = "lezione"))
     private List<Lezione> inviti;
 
-    @OneToMany(mappedBy = "iscritto")
+    @OneToMany(mappedBy = "istruttore")
     private List<Lezione> lezioniIscritte;
 
     @OneToMany(mappedBy = "noleggiatore")

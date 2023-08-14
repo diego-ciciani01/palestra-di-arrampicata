@@ -1,13 +1,20 @@
 package com.polimi.palestraarrampicata.model;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "lezione")
 public class Lezione {
     @Id
@@ -16,14 +23,14 @@ public class Lezione {
     private Integer id;
 
     @Column(name = "data_lezione")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date data;
+    @DateTimeFormat(pattern = "dd/MM/yyyy hh:mm")
+    private LocalDateTime data;
 
     @Column(name = "durata_lezione")
     private Float durata;
 
     @Column(name = "stato_lezione", nullable = false)
-    private Boolean statoLazione;
+    private Boolean statoLezione;
 
     @Enumerated(EnumType.ORDINAL)
     private TipologiaLezione tipologiaLezione;
@@ -35,7 +42,16 @@ public class Lezione {
     private List<Utente>  utentiInvitati;
 
     @ManyToOne
-    @JoinColumn(name = "iscritto")
-    private Utente iscritto;
+    @JoinColumn(name = "istruttore")
+    private Utente istruttore;
+
+    @Column(name = "commento_istruttore")
+    private String commento;
+
+    public Lezione(LocalDateTime StartLesson, Float durata, TipologiaLezione tipologiaLezione){
+        this.data = StartLesson;
+        this.durata = durata;
+        this.tipologiaLezione = tipologiaLezione;
+    }
 
 }

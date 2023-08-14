@@ -6,6 +6,7 @@ import com.polimi.palestraarrampicata.security.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindingResult;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -39,5 +40,14 @@ public class Utils {
     public static LocalDate parseLocalDateFromString(String data){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return  LocalDate.parse(data, formatter);
+    }
+    public static LocalDateTime formatterDataTime(String data) throws DateTimeException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return LocalDateTime.parse(data, formatter);
+    }
+
+    public static LocalDate formatterData(String data) throws DateTimeException {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return LocalDate.parse(data, formatter);
     }
 }

@@ -7,8 +7,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class ResposeAccettaRifiuta {
+public class ResponsePalestra {
     private String id;
-    private String commento;
-    private boolean accettata;
+    private String nome;
+
+    private  String message;
 }

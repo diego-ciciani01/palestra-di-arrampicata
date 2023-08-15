@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Builder
-public class ResposeLezione {
+public class ResponseLezione {
     private String dataLezione;
     private String id;
     private boolean statoLezione;

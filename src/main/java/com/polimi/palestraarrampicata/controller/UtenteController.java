@@ -1,17 +1,19 @@
 package com.polimi.palestraarrampicata.controller;
 
+import com.polimi.palestraarrampicata.dto.request.RequestCommento;
 import com.polimi.palestraarrampicata.service.LezioneService;
 import com.polimi.palestraarrampicata.service.UtenteService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.*;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,4 +49,13 @@ public class UtenteController {
         }
     }
 
+    @PostMapping("commenta/istruttore")
+    public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, BindingResult result, HttpServletRequest request){
+        try{
+            return ResponseEntity.ok(utenteService.creaCommento(request, requestCommento));
+        }catch (IllegalStateException | EntityNotFoundException e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
 }

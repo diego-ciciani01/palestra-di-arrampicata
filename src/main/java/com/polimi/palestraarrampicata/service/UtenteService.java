@@ -1,25 +1,27 @@
 package com.polimi.palestraarrampicata.service;
 
 
-import com.polimi.palestraarrampicata.dto.response.ResposeLezione;
+import com.polimi.palestraarrampicata.dto.request.RequestCommento;
+import com.polimi.palestraarrampicata.dto.response.ResponseLezione;
+import com.polimi.palestraarrampicata.exception.CreazioneCommentoFallita;
 import com.polimi.palestraarrampicata.exception.RicercaFallita;
+import com.polimi.palestraarrampicata.model.Commento;
 import com.polimi.palestraarrampicata.model.Lezione;
 import com.polimi.palestraarrampicata.model.Ruolo;
 import com.polimi.palestraarrampicata.model.Utente;
+import com.polimi.palestraarrampicata.repository.CommentoRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
 import com.polimi.palestraarrampicata.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,7 @@ import java.util.List;
 public class UtenteService implements UserDetailsService {
 
     private final UtenteRepo utenteRepo;
+    private final CommentoRepo commentoRepo;
     private  final JwtUtils jwtUtils;
     @Override
     public UserDetails loadUserByUsername(String email) throws IllegalStateException {
@@ -71,14 +74,14 @@ public class UtenteService implements UserDetailsService {
 
     }
 */
-    public List<ResposeLezione> getListInvitiLezione(HttpServletRequest httpServletRequest) throws EntityNotFoundException{
+    public List<ResponseLezione> getListInvitiLezione(HttpServletRequest httpServletRequest) throws EntityNotFoundException{
 
-        List<ResposeLezione> lezioneList = new ArrayList<>();
+        List<ResponseLezione> lezioneList = new ArrayList<>();
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
         if(utenteLoggato.getRuolo() != Ruolo.UTENTE)
             throw new RicercaFallita("Utenete inserito non valido");
         for(Lezione l: utenteLoggato.getInviti()){
-            lezioneList.add(ResposeLezione
+            lezioneList.add(ResponseLezione
                     .builder()
                     .id(l.getId().toString())
                     .dataLezione(l.getData().toString())
@@ -89,14 +92,14 @@ public class UtenteService implements UserDetailsService {
         return lezioneList;
     }
 
-    public List<ResposeLezione> getListInvitiLezioneAccettate(HttpServletRequest httpServletRequest) throws EntityNotFoundException {
-        List<ResposeLezione> lezioneList = new ArrayList<>();
+    public List<ResponseLezione> getListInvitiLezioneAccettate(HttpServletRequest httpServletRequest) throws EntityNotFoundException {
+        List<ResponseLezione> lezioneList = new ArrayList<>();
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
         if(utenteLoggato.getRuolo() != Ruolo.UTENTE)
             throw new RicercaFallita("Utenete inserito non valido");
         for(Lezione l: utenteLoggato.getInviti()){
             if(l.getStatoLezione()) {
-                lezioneList.add(ResposeLezione
+                lezioneList.add(ResponseLezione
                         .builder()
                         .id(l.getId().toString())
                         .dataLezione(l.getData().toString())
@@ -109,9 +112,28 @@ public class UtenteService implements UserDetailsService {
     }
     public String deleteUserByEmail(String email){
         if(email.isEmpty()) throw new IllegalStateException("Email non esistente");
-        Utente user = (Utente) loadUserByUsername(email);
-        utenteRepo.delete(user);
-        return "L'utente" + user.getEmail() + "è stato eliminato correttamente";
+            Utente user = (Utente) loadUserByUsername(email);
+            utenteRepo.delete(user);
+            return "L'utente" + user.getEmail() + "è stato eliminato correttamente";
+    }
+
+    public Commento creaCommento(HttpServletRequest httpServletRequest, RequestCommento requestCommento){
+        try{
+            Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
+            LocalDateTime dataPubblicazione = Utils.formatterDataTime(requestCommento.getDataPubblicazione());
+            Integer idIstruttoreCommentato = Integer.parseInt(requestCommento.getEmailIstruttoreCommentato());
+            Integer idCommentoPadre = null;
+            if(requestCommento.getIdCommentoPadre() != null)
+                idCommentoPadre = Integer.parseInt(requestCommento.getIdCommentoPadre());
+
+            Utente istruttore = utenteRepo.findById(idIstruttoreCommentato).orElseThrow(() -> new CreazioneCommentoFallita("l'email dell'istruttore inserita non esiste"));
+            Commento commentoPadre = null;
+            if(idCommentoPadre != null)
+                    commentoPadre = commentoRepo.findById(idCommentoPadre).orElseThrow(() -> new CreazioneCommentoFallita("il commento padre con l'id fornito non esiste"));
+            Commento commentoNuvo = new Commento();
+
+
+        }
     }
 
 }

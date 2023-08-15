@@ -18,8 +18,7 @@ public class RequestRegistrazione {
 
     @NotNull
     @NotEmpty
-    @Pattern(regexp="^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",
-            message = "Inserire un indirizzo email valido")
+    @Pattern(regexp= Utils.REGEX_EMAIL, message = Utils.ERROR_EMAIL)
     private String email;
 
     @NotNull

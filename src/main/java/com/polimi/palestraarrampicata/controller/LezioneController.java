@@ -2,8 +2,6 @@ package com.polimi.palestraarrampicata.controller;
 
 import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestLezione;
-import com.polimi.palestraarrampicata.dto.request.RequestLogin;
-import com.polimi.palestraarrampicata.dto.response.ResposeLezione;
 import com.polimi.palestraarrampicata.service.LezioneService;
 import com.polimi.palestraarrampicata.dto.request.RequestAccettaRiffiuta;
 import jakarta.persistence.EntityNotFoundException;

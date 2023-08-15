@@ -1,6 +1,7 @@
 package com.polimi.palestraarrampicata.dto.request;
 
 import com.polimi.palestraarrampicata.model.Utente;
+import com.polimi.palestraarrampicata.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,8 +12,7 @@ import javax.validation.constraints.*;
 public class RequestLogin {
 
     @NotNull
-    @Pattern(regexp="^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",
-            message = "Inserire un indirizzo email valido")
+    @Pattern(regexp= Utils.REGEX_EMAIL, message = Utils.ERROR_EMAIL)
     private String email;
 
     @NotNull

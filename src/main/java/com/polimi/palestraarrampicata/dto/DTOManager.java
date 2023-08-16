@@ -1,10 +1,7 @@
 package com.polimi.palestraarrampicata.dto;
 
 import com.polimi.palestraarrampicata.dto.response.*;
-import com.polimi.palestraarrampicata.model.Corso;
-import com.polimi.palestraarrampicata.model.Lezione;
-import com.polimi.palestraarrampicata.model.Palestra;
-import com.polimi.palestraarrampicata.model.Utente;
+import com.polimi.palestraarrampicata.model.*;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -40,6 +37,14 @@ public class DTOManager {
                 .build();
 
     }
+    public static ResponseCommento ResponseCommentoFromCommento(Commento commento){
+        return ResponseCommento.builder()
+                .id(commento.getId().toString())
+                .emailIstruttore(commento.getIstruttoreCommentato().getEmail())
+                .testo(commento.getTesto())
+                .build();
+    }
+
     public  static List<ResponseUtente> toUserResponseByUsers(List<Utente> utenti){
            List<ResponseUtente> listUtenti = new ArrayList<>();
            List<ResponseCorso> corsiUtenti = new ArrayList<>();

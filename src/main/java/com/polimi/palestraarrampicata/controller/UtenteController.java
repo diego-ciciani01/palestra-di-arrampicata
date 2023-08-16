@@ -1,6 +1,8 @@
 package com.polimi.palestraarrampicata.controller;
 
+import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestCommento;
+import com.polimi.palestraarrampicata.dto.request.RequestValutazione;
 import com.polimi.palestraarrampicata.service.LezioneService;
 import com.polimi.palestraarrampicata.service.UtenteService;
 import jakarta.persistence.EntityNotFoundException;
@@ -49,12 +51,20 @@ public class UtenteController {
         }
     }
 
+    @PreAuthorize("hasAuthority('UTENTE')")
     @PostMapping("commenta/istruttore")
     public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, BindingResult result, HttpServletRequest request){
         try{
-            return ResponseEntity.ok(utenteService.creaCommento(request, requestCommento));
+            return ResponseEntity.ok(DTOManager.ResponseCommentoFromCommento(utenteService.creaCommento(request, requestCommento)));
         }catch (IllegalStateException | EntityNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    public ResponseEntity<?> creaValutazione(@Valid @RequestBody RequestValutazione requestValutazione, BindingResult result, HttpServletRequest request){
+        try{
+            return ResponseEntity.ok(utenteService.creaValutazione(request, requestValutazione));
+        }catch (IllegalStateException ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

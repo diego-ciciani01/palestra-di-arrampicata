@@ -104,7 +104,8 @@ public class Utente implements UserDetails {
     @JoinColumn(name ="corso"))
     private List<Corso> corsiIscritto;
 
-
+    @OneToMany(mappedBy = "istruttoreCommentato")
+    private List<Commento> commentiIstruttore;
 
     public Utente(String email, Ruolo ruolo, String password, boolean enable) {
         this.email = email;

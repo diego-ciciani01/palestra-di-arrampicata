@@ -6,6 +6,7 @@ import com.polimi.palestraarrampicata.security.JwtUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.validation.BindingResult;
 
+import javax.xml.crypto.Data;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +16,6 @@ public class Utils {
 
     public static final String REGEX_EMAIL = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
     public static final String REGEX_PASSWORD = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-    public static final String SESSO = "^(?i)(man|women)$";
     public static final String LOCALDATE = "^(0[1-9]|[1-2][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$";
     public static final String LOCALDATETIME = "^(\\d{2})/(\\d{2})/(\\d{4}) (\\d{2}):(\\d{2})$";
     public static final String LOCALTIME = "^([01][0-9]|2[0-3]):[0-5][0-9]$";
@@ -27,6 +27,10 @@ public class Utils {
     public static final String ERROR_LOCALDATETIME = "La data deve essere nel formato dd/MM/yyyy HH:mm";
     public static final String ERROR_LOCALTIME = "L'orario deve essere nel formato HH:mm";
     public  static final  String ERROR_CAP = "Il formato del cap non è corretto, deve contenere 5 numeri";
+
+    public static  final  String ERROR_MIN_VALUE = "Il valore della valutazione deve essere un intero compreso tra 1 e 5";
+
+    public  static  final  String ERROR_MAX_VALUE = "Il valore della valutazione deve essere un intero compreso tra 1 e 5";
 
     public static String getErrori(BindingResult result) {
         StringBuilder errori = new StringBuilder();
@@ -48,6 +52,9 @@ public class Utils {
         return LocalDateTime.parse(data, formatter);
     }
 
+    public static LocalDateTime withoutSeconds(LocalDateTime data) throws DateTimeException{
+        return data.withSecond(0).withNano(0);
+    }
     public static LocalDate formatterData(String data) throws DateTimeException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return LocalDate.parse(data, formatter);

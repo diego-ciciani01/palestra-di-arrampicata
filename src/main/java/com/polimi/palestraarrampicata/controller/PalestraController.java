@@ -19,7 +19,7 @@ import javax.validation.Valid;
 public class PalestraController {
     private final PalestraService palestraService;
 
-    @PreAuthorize("hasAutority('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<ResponsePalestra> createPalestra(@Valid @RequestBody RequestPalestra requestPalestra){
         try {

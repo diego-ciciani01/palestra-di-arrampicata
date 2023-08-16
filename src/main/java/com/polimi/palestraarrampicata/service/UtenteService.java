@@ -2,13 +2,12 @@ package com.polimi.palestraarrampicata.service;
 
 
 import com.polimi.palestraarrampicata.dto.request.RequestCommento;
+import com.polimi.palestraarrampicata.dto.request.RequestValutazione;
+import com.polimi.palestraarrampicata.dto.response.ResponseCommento;
 import com.polimi.palestraarrampicata.dto.response.ResponseLezione;
 import com.polimi.palestraarrampicata.exception.CreazioneCommentoFallita;
 import com.polimi.palestraarrampicata.exception.RicercaFallita;
-import com.polimi.palestraarrampicata.model.Commento;
-import com.polimi.palestraarrampicata.model.Lezione;
-import com.polimi.palestraarrampicata.model.Ruolo;
-import com.polimi.palestraarrampicata.model.Utente;
+import com.polimi.palestraarrampicata.model.*;
 import com.polimi.palestraarrampicata.repository.CommentoRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
@@ -22,8 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -120,20 +121,42 @@ public class UtenteService implements UserDetailsService {
     public Commento creaCommento(HttpServletRequest httpServletRequest, RequestCommento requestCommento){
         try{
             Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
-            LocalDateTime dataPubblicazione = Utils.formatterDataTime(requestCommento.getDataPubblicazione());
-            Integer idIstruttoreCommentato = Integer.parseInt(requestCommento.getEmailIstruttoreCommentato());
+            LocalDateTime dataPubblicazione = Utils.withoutSeconds(LocalDateTime.now());
+            //Integer idIstruttoreCommentato = Integer.parseInt(requestCommento.getEmailIstruttoreCommentato());
+            Utente  istruttore =  utenteRepo.findByEmail(requestCommento.getEmailIstruttoreCommentato());
+            Integer idIstruttoreCommentato = istruttore.getId();
+            Commento commentoNuovo = new Commento();
+
+            Commento commentoPadre = null;
             Integer idCommentoPadre = null;
-            if(requestCommento.getIdCommentoPadre() != null)
+
+            if(requestCommento.getIdCommentoPadre() != null) {
                 idCommentoPadre = Integer.parseInt(requestCommento.getIdCommentoPadre());
 
-            Utente istruttore = utenteRepo.findById(idIstruttoreCommentato).orElseThrow(() -> new CreazioneCommentoFallita("l'email dell'istruttore inserita non esiste"));
-            Commento commentoPadre = null;
-            if(idCommentoPadre != null)
+                if (idCommentoPadre != null)
                     commentoPadre = commentoRepo.findById(idCommentoPadre).orElseThrow(() -> new CreazioneCommentoFallita("il commento padre con l'id fornito non esiste"));
-            Commento commentoNuvo = new Commento();
 
-
+                if (!commentoPadre.getIstruttoreCommentato().getId().equals(istruttore.getId()))
+                    throw new CreazioneCommentoFallita("L'istruttore commentato a quella del commento padre");
+            }
+            commentoNuovo.setCommentoPadre(commentoPadre);
+            commentoNuovo.setCommentatore(utenteLoggato);
+            commentoNuovo.setIstruttoreCommentato(istruttore);
+            commentoNuovo.setTesto(requestCommento.getTesto());
+            commentoNuovo.setDataInserimento(dataPubblicazione);
+            commentoRepo.save(commentoNuovo);
+            return commentoNuovo;
+        }catch (DateTimeParseException e){
+            throw new CreazioneCommentoFallita("Formato data inserimento non valida");
+        }catch (IllegalArgumentException e){
+            throw new CreazioneCommentoFallita("Parametri errati");
         }
+
     }
+    public Valutazione creaValutazione(HttpServletRequest httpServletRequest, RequestValutazione requestValutazione){
+
+    }
+
+
 
 }

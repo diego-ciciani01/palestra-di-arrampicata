@@ -14,9 +14,7 @@ import javax.validation.constraints.Pattern;
 public class RequestCommento {
 
     private String idCommentoPadre;
-    @NotNull
-    @NotEmpty
-    private String dataPubblicazione;
+
     @NotNull
     @NotEmpty
     private String testo;

@@ -5,6 +5,8 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 @Data
 @Entity
 @Table(name = "attrezzatura")
@@ -31,9 +33,15 @@ public class Attrezzatura {
     @Column(name= "nome")
     private String nomeAttrezzatura;
 
-    @Column(name = "taglia")
-    private String taglia;
 
+    @OneToMany(mappedBy = "attrezzo")
+    private List<Taglia> nomeTaglia;
+
+/*
+    @ManyToOne
+    @JoinColumn(name = "attrezzo")
+    private Taglia taglia;
+*/
     @ManyToOne
     @JoinColumn(name="noleggiatore")
     private Utente noleggiatore;

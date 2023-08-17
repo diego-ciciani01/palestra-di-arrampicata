@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import javax.swing.*;
 import javax.validation.Valid;
 
 @RestController
@@ -55,11 +53,14 @@ public class UtenteController {
     @PostMapping("commenta/istruttore")
     public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, BindingResult result, HttpServletRequest request){
         try{
-            return ResponseEntity.ok(DTOManager.ResponseCommentoFromCommento(utenteService.creaCommento(request, requestCommento)));
+            return ResponseEntity.ok(DTOManager.ToResponseCommentoBYCommento(utenteService.creaCommento(request, requestCommento)));
         }catch (IllegalStateException | EntityNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PreAuthorize("hasAuthority('UTENTE')")
+    @PostMapping("valuta/istruttore")
     public ResponseEntity<?> creaValutazione(@Valid @RequestBody RequestValutazione requestValutazione, BindingResult result, HttpServletRequest request){
         try{
             return ResponseEntity.ok(utenteService.creaValutazione(request, requestValutazione));

@@ -29,7 +29,7 @@ public class DTOManager {
                 .statoLezione(lezione.getStatoLezione())
                 .build();
     }
-    public static ResponseAccettaRifiuta ResposeIstruttoreFromLesson(Lezione lezione){
+    public static ResponseAccettaRifiuta ToResposeIstruttoreByLesson(Lezione lezione){
         return ResponseAccettaRifiuta.builder()
                 .id(lezione.getId().toString())
                 .accettata(lezione.getStatoLezione())
@@ -37,7 +37,7 @@ public class DTOManager {
                 .build();
 
     }
-    public static ResponseCommento ResponseCommentoFromCommento(Commento commento){
+    public static ResponseCommento ToResponseCommentoBYCommento(Commento commento){
         return ResponseCommento.builder()
                 .id(commento.getId().toString())
                 .emailIstruttore(commento.getIstruttoreCommentato().getEmail())
@@ -79,6 +79,17 @@ public class DTOManager {
         return ResponsePalestra.builder()
                 .id(palestra.getId().toString())
                 .nome(palestra.getNome())
+                .build();
+    }
+    public static ResponseAttrezzatura toAttrezzaturaResponseByAttrezzatura(Attrezzatura attrezzi){
+        return ResponseAttrezzatura.builder()
+                .id(attrezzi.getId().toString())
+                .disponibilita(attrezzi.getDisponibilita())
+                .taglia(attrezzi.getNomeTaglia())
+                .dataNoleggio(attrezzi.getDataNoleggio())
+                .dataFineNoleggio(attrezzi.getDataFineNoleggio())
+                .nomeAttrezzo(attrezzi.getNomeAttrezzatura())
+                .nomePalestraAppartenente(attrezzi.getAttrezziPalestra().getNome())
                 .build();
     }
 }

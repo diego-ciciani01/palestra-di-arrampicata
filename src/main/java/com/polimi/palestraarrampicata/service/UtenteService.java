@@ -6,10 +6,12 @@ import com.polimi.palestraarrampicata.dto.request.RequestValutazione;
 import com.polimi.palestraarrampicata.dto.response.ResponseCommento;
 import com.polimi.palestraarrampicata.dto.response.ResponseLezione;
 import com.polimi.palestraarrampicata.exception.CreazioneCommentoFallita;
+import com.polimi.palestraarrampicata.exception.InserimentoValutazioneFallita;
 import com.polimi.palestraarrampicata.exception.RicercaFallita;
 import com.polimi.palestraarrampicata.model.*;
 import com.polimi.palestraarrampicata.repository.CommentoRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
+import com.polimi.palestraarrampicata.repository.ValutazioneRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
 import com.polimi.palestraarrampicata.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.yaml.snakeyaml.util.EnumUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,6 +35,7 @@ public class UtenteService implements UserDetailsService {
 
     private final UtenteRepo utenteRepo;
     private final CommentoRepo commentoRepo;
+    private  final ValutazioneRepo valutazioneRepo;
     private  final JwtUtils jwtUtils;
     @Override
     public UserDetails loadUserByUsername(String email) throws IllegalStateException {
@@ -154,7 +158,25 @@ public class UtenteService implements UserDetailsService {
 
     }
     public Valutazione creaValutazione(HttpServletRequest httpServletRequest, RequestValutazione requestValutazione){
+        Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
+        Utente istruttoreDaValutare = null;
+        istruttoreDaValutare=  utenteRepo.findByEmail(requestValutazione.getEmailValutato());
 
+        if(istruttoreDaValutare == null){
+            throw new InserimentoValutazioneFallita("Utente da valutare inserito non esistente");
+        }else {
+            Valutazione valutazione = valutazioneRepo.findByValutatoreAndValutato(utenteLoggato, istruttoreDaValutare);
+            if(valutazione == null){
+                Valutazione nuovaValutazione = new Valutazione();
+                nuovaValutazione.setValore(Integer.parseInt(requestValutazione.getValore()));
+                nuovaValutazione.setValutatore(utenteLoggato);
+                nuovaValutazione.setValutato(istruttoreDaValutare);
+                valutazioneRepo.save(nuovaValutazione);
+                return  nuovaValutazione;
+            }else{
+                throw new InserimentoValutazioneFallita("la valutazione è già stata inserita per questo istruttore");
+            }
+        }
     }
 
 

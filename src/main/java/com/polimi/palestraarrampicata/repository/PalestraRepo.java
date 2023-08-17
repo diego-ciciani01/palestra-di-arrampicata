@@ -13,4 +13,5 @@ public interface PalestraRepo extends CrudRepository<Palestra, Integer> {
 
     Optional<Palestra> findByNomeAndIndirizzo(String nomePalestra, String indirizzo);
 
+
 }

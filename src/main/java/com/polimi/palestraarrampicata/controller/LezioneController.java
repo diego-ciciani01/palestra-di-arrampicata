@@ -53,7 +53,7 @@ public class LezioneController {
     @PreAuthorize("hasAuthority('ISTRUTTORE')")
     public ResponseEntity<?> accettaInvito(@Valid @RequestBody RequestAccettaRiffiuta requestAccettaRifiuta,BindingResult result,  HttpServletRequest request){
         try{
-            return ResponseEntity.ok(DTOManager.ResposeIstruttoreFromLesson(lezioneService.accettaRifiutaLezione(requestAccettaRifiuta, request)));
+            return ResponseEntity.ok(DTOManager.ToResposeIstruttoreByLesson(lezioneService.accettaRifiutaLezione(requestAccettaRifiuta, request)));
         }catch (EntityNotFoundException | IllegalStateException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
 

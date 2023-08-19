@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,6 +40,8 @@ public class AttrezzaturaController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/getAll/type/")
     public ResponseEntity<?> getAllequipmentType(@Valid @RequestBody RequestAttrezzatura requestAttrezzatura){
         try {
             return  ResponseEntity.ok(attrezzaturaService.getListAttrezzaturaPerTipo(requestAttrezzatura));

@@ -1,5 +1,6 @@
 package com.polimi.palestraarrampicata.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -15,9 +16,6 @@ public class Attrezzatura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false) // updatable = false: non permette di modificare l'id
     private Integer id;
-
-    @Column(name = "quantita")
-    private Integer quantita;
 
     @Column(name = "data_noleggio")
     @DateTimeFormat(pattern = "dd/MM/yyyy")

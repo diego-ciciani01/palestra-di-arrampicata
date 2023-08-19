@@ -10,6 +10,5 @@ import lombok.Data;
 public class ResponsePalestra {
     private String id;
     private String nome;
-
-    private  String message;
+    private String message;
 }

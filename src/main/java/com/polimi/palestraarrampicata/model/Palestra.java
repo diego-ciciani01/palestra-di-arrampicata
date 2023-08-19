@@ -1,10 +1,14 @@
 package com.polimi.palestraarrampicata.model;
 
+import com.polimi.palestraarrampicata.utils.Utils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -18,18 +22,29 @@ public class Palestra {
     @Column(name = "id", nullable = false, updatable = false) // updatable = false: non permette di modificare l'id
     private Integer id;
 
+    @NotNull
+    @NotEmpty
     @Column(name = "nome")
     private String nome;
 
+    @NotNull
+    @NotEmpty
     @Column(name = "indirizzo")
     private String indirizzo;
 
+    @NotNull
+    @NotEmpty
     @Column(name = "cap")
+    @Size(min = 5, max = 5, message = Utils.ERROR_CAP)
     private String cap;
 
+    @NotNull
+    @NotEmpty
     @Column(name = "citta")
     private String citta;
 
+    @NotNull
+    @NotEmpty
     @Column(name = "telefono")
     private String telefono;
 

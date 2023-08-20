@@ -19,6 +19,7 @@ public class DTOManager {
                 .username(utente.getUsername())
                 .fotoProfilo(utente.getFotoProfilo())
                 .ruolo(utente.getRuolo())
+                .eta(Period.between(utente.getDataDiNascita(), LocalDate.now()).getYears())
                 .build();
     }
     public static ResponseLezione toLessonResponseByLesson(Lezione lezione){
@@ -90,6 +91,27 @@ public class DTOManager {
                 .dataFineNoleggio(attrezzi.getDataFineNoleggio())
                 .nomeAttrezzo(attrezzi.getNomeAttrezzatura())
                 .nomePalestraAppartenente(attrezzi.getAttrezziPalestra().getNome())
+                .build();
+    }
+
+    public static ResponseCorso toCorsoResponseByCorso(Corso corso){
+       return ResponseCorso.builder()
+               .id(corso.getId().toString())
+               .numeroSettimane(corso.getSettimaneDiCorso())
+               .nome(corso.getNome())
+               .emailIstruttore(corso.getIstruttoreCorso().getEmail())
+               .dataInizio(corso.getDataInizio())
+               .build();
+    }
+
+    public static ResponseEscursione toEscursioneResponseByEscursione(Escursione escursione){
+        return ResponseEscursione.builder()
+                .id(escursione.getId())
+                .nomeEscursione(escursione.getNomeEscursione())
+                .data(escursione.getData())
+                .descrizione(escursione.getDescrizione())
+                .emailOrganizzatore(escursione.getOrganizzatore().getEmail())
+                .postiDisponibili(escursione.getPostiDisponibili())
                 .build();
     }
 }

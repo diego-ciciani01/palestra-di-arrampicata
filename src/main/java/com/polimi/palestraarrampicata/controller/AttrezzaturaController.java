@@ -50,7 +50,7 @@ public class AttrezzaturaController {
             return  new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    /*
     @PostMapping("/noleggia")
     public ResponseEntity<?> noleggiaAttrazzatura(@Valid @RequestBody RequestNoleggiaAttrezzatura requestAttrezzatura, BindingResult result, HttpServletRequest request){
         try{
@@ -59,6 +59,7 @@ public class AttrezzaturaController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
+    */
 
     @PostMapping("/inserisci")
     @PreAuthorize("hasAuthority('ADMIN')")

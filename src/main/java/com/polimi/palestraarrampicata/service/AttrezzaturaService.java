@@ -79,7 +79,7 @@ public class AttrezzaturaService {
         }
         return attrezzaturaResponse;
     }
-
+/*
     public Attrezzatura noleggiaAttrazzatura(HttpServletRequest httpServletRequest, RequestNoleggiaAttrezzatura requestAttrezzatura) throws EntityNotFoundException{
 
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
@@ -117,6 +117,8 @@ public class AttrezzaturaService {
         return nuovoAttrezzo;
     }
 
+
+ */
     public Attrezzatura inserisciNuovoAttrezzo(RequestAttrezzatura requestAttrezzatura) throws EntityNotFoundException{
         Attrezzatura attrezzo = attrezzaturaRepo.findByNomeAttrezzatura(requestAttrezzatura.getNomeAttrezzo());
         Palestra palestra = palestraRepo.findById(Integer.parseInt(requestAttrezzatura.getIdPalestraPossessore())).get();

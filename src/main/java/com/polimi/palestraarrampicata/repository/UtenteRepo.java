@@ -1,5 +1,6 @@
 package com.polimi.palestraarrampicata.repository;
 
+import com.polimi.palestraarrampicata.model.Corso;
 import com.polimi.palestraarrampicata.model.Lezione;
 import com.polimi.palestraarrampicata.model.Ruolo;
 import com.polimi.palestraarrampicata.model.Utente;
@@ -18,6 +19,8 @@ public interface UtenteRepo extends CrudRepository<Utente, Integer> {
     Utente findByEmail(String email);
 
     Optional<Utente> findUserByEmailAndRuolo(String email, Ruolo istruttore);
+
+    List<Corso> findCorsiTenutiByEmail(String email);
 
 }
 

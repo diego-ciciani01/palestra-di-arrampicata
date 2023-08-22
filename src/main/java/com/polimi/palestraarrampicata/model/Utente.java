@@ -83,7 +83,7 @@ public class Utente implements UserDetails {
     private List<Lezione> lezioniIscritte;
 
     @OneToMany(mappedBy = "noleggiatore")
-    private List<Attrezzatura> attrezzatureNoleggiate ;
+    private List<Noleggio> attrezzatureNoleggiate;
 
     @ManyToOne()
     @JoinColumn(name = "iscritti_palestra")

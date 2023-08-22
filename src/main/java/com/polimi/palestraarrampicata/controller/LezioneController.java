@@ -47,7 +47,6 @@ public class LezioneController {
 
     }
 
-    // SCRVI IL POST MAPPING PER ACCETTARE LA LEZIONEEEEE
     @PostMapping(value = "/invito/accetta", consumes = "application/json")
     //@PreAuthorize("hasRole('ROLE_'+T(com.polimi.palestraarrampicata.model.Ruolo).ISTRUTTORE)")
     @PreAuthorize("hasAuthority('ISTRUTTORE')")

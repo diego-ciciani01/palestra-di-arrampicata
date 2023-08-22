@@ -39,4 +39,6 @@ public class RequestNoleggiaAttrezzatura {
     @NotEmpty
     @Pattern(regexp = Utils.LOCALDATETIME, message = Utils.ERROR_LOCALDATETIME)
     private String dataFineNoleggio;
+
+
 }

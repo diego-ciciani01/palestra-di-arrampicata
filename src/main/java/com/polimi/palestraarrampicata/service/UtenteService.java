@@ -122,6 +122,7 @@ public class UtenteService implements UserDetailsService {
             return "L'utente" + user.getEmail() + "è stato eliminato correttamente";
     }
 
+
     public Commento creaCommento(HttpServletRequest httpServletRequest, RequestCommento requestCommento){
         try{
             Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
@@ -155,8 +156,9 @@ public class UtenteService implements UserDetailsService {
         }catch (IllegalArgumentException e){
             throw new CreazioneCommentoFallita("Parametri errati");
         }
-
     }
+
+
     public Valutazione creaValutazione(HttpServletRequest httpServletRequest, RequestValutazione requestValutazione){
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
         Utente istruttoreDaValutare = null;
@@ -179,6 +181,31 @@ public class UtenteService implements UserDetailsService {
         }
     }
 
+    /**
+     * Con questo metodo andiamo a prendere una lista di commenti sotto l'id istruttore passato nel
+     * metodo, se l'utente loggato ha partecipato alla conversazione dei commenti, ritorniamo la conversazione
+     * @param httpServletRequest
+     * @param idIstruttore
+     * @return
+     */
+    public List <ResponseCommento> getListCommentifromUtenteToIstruttore(HttpServletRequest httpServletRequest, Integer idIstruttore){
+        Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
+        Utente istruttore = utenteRepo.findById(idIstruttore).orElseThrow(() -> new EntityNotFoundException("l'istruttore inserito non esiste"));
+        List<Commento> commentiUtente = commentoRepo.findAllByCommentatoreAndIstruttoreCommentato(utenteLoggato, istruttore);
+        if(commentiUtente==null)
+            throw new EntityNotFoundException("non ci sono commenti fatti verso l'istuttore " + istruttore.getEmail());
+
+        List<ResponseCommento> responseCommenti = new ArrayList<>();
+        for(Commento c: commentiUtente){
+            responseCommenti.add(ResponseCommento.builder()
+                            .emailIstruttore(istruttore.getEmail())
+                            .testo(c.getTesto())
+                            .commentatore(c.getCommentatore().getEmail())
+                            .build());
+        }
+        return responseCommenti;
+
+    }
 
 
 }

@@ -3,7 +3,6 @@ package com.polimi.palestraarrampicata.controller;
 import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestCommento;
 import com.polimi.palestraarrampicata.dto.request.RequestValutazione;
-import com.polimi.palestraarrampicata.service.LezioneService;
 import com.polimi.palestraarrampicata.service.UtenteService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +38,7 @@ public class UtenteController {
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_'+T(com.polimi.palestraarrampicata.model.Ruolo).ADMIN)")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/delete/user/{email}")
     public ResponseEntity<String> deleteUtente(@PathVariable("email") String email){
         try{
@@ -48,8 +47,6 @@ public class UtenteController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @PreAuthorize("hasAuthority('UTENTE')")
     @PostMapping("commenta/istruttore")
     public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, BindingResult result, HttpServletRequest request){
         try{
@@ -58,7 +55,6 @@ public class UtenteController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
-
     @PreAuthorize("hasAuthority('UTENTE')")
     @PostMapping("valuta/istruttore")
     public ResponseEntity<?> creaValutazione(@Valid @RequestBody RequestValutazione requestValutazione, BindingResult result, HttpServletRequest request){
@@ -67,6 +63,15 @@ public class UtenteController {
         }catch (IllegalStateException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
+    @PostMapping("commenti/getAllByIstruttore/{id_istruttore}")
+    public ResponseEntity<?> getAllCommenti(@PathVariable("id_istruttore") Integer idIstruttore, HttpServletRequest httpServletRequest){
+        try {
+            return ResponseEntity.ok(utenteService.getListCommentifromUtenteToIstruttore(httpServletRequest, idIstruttore));
+        }catch (IllegalStateException ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

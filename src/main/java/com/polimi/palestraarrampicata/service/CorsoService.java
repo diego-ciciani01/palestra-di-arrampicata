@@ -14,7 +14,6 @@ import com.polimi.palestraarrampicata.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.data.repository.kotlin.CoroutineCrudRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.DateTimeException;

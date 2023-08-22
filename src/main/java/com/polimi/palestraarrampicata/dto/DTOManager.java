@@ -10,7 +10,6 @@ import java.util.List;
 
 
 public class DTOManager {
-    private static Utente user;
     public static ResponseUtente ResponseUtenteFromUtente(Utente utente){
         return ResponseUtente.builder()
                 .id(utente.getId().toString())
@@ -76,6 +75,31 @@ public class DTOManager {
         return listUtenti;
     }
 
+    public static List<ResponseAttrezzatura> listAttrezzatureWithNoleggio(List<Attrezzatura> attrezzi){
+        List<ResponseAttrezzatura> listAttrezzatura = new ArrayList<>();
+        List<ResponseNoleggio> listNoleggio = new ArrayList<>();
+        for(Attrezzatura attrezzo: attrezzi){
+            for(Noleggio noleggio: attrezzo.getNoleggi()){
+                listNoleggio.add(
+                        ResponseNoleggio.builder()
+                                .id(noleggio.getId().toString())
+                                .dataInizioNoleggio(noleggio.getDataNoleggio().toString())
+                                .dataFineNoleggio(noleggio.getDataFineNoleggio().toString())
+                                .build());
+            }
+            listAttrezzatura.add(
+                    ResponseAttrezzatura.builder()
+                            .id(attrezzo.getId().toString())
+                            .nomePalestraAppartenente(attrezzo.getAttrezziPalestra().getNome())
+                            .taglia(attrezzo.getNomeTaglia())
+                            .nomeAttrezzo(attrezzo.getNomeAttrezzatura())
+                            .disponibilita(attrezzo.getDisponibilita())
+                            .noleggi(listNoleggio)
+                            .build());
+        }
+        return listAttrezzatura;
+    }
+
     public static ResponsePalestra toPalestraResponseByPalestra(Palestra palestra){
         return ResponsePalestra.builder()
                 .id(palestra.getId().toString())
@@ -87,8 +111,6 @@ public class DTOManager {
                 .id(attrezzi.getId().toString())
                 .disponibilita(attrezzi.getDisponibilita())
                 .taglia(attrezzi.getNomeTaglia())
-                .dataNoleggio(attrezzi.getDataNoleggio())
-                .dataFineNoleggio(attrezzi.getDataFineNoleggio())
                 .nomeAttrezzo(attrezzi.getNomeAttrezzatura())
                 .nomePalestraAppartenente(attrezzi.getAttrezziPalestra().getNome())
                 .build();

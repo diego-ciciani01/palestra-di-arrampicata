@@ -38,6 +38,12 @@ public class CorsoController {
         }
     }
 
+    /**
+     * In questo EndPoint solo L'admin è in grado di eliminare un corso passando l'id di quest'ultimo
+     * @param idCorso
+     * @return
+     */
+
     @PostMapping("/elimina/{id_corso}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<?> eliminaCorso(@PathVariable("id_corso") Integer idCorso){

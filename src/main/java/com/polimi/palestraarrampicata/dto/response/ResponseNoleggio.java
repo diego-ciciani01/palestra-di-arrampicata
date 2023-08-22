@@ -7,10 +7,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
-public class ResponseCommento {
+public class ResponseNoleggio {
+    private String dataInizioNoleggio;
+    private String dataFineNoleggio;
     private String id;
-    private String testo;
-    private String emailIstruttore;
-    private String commentatore;
 
 }

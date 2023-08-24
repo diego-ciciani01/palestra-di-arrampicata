@@ -3,7 +3,6 @@ package com.polimi.palestraarrampicata.service;
 import com.polimi.palestraarrampicata.dto.request.RequestCorso;
 import com.polimi.palestraarrampicata.dto.request.RequestIscriviti;
 import com.polimi.palestraarrampicata.dto.response.ResponseCorso;
-import com.polimi.palestraarrampicata.dto.response.ResponseLezione;
 import com.polimi.palestraarrampicata.exception.CreazioneAttivitaFallita;
 import com.polimi.palestraarrampicata.exception.RicercaFallita;
 import com.polimi.palestraarrampicata.model.*;
@@ -35,8 +34,6 @@ public class CorsoService {
                 .orElseThrow(()-> new EntityNotFoundException("L'istruttore inserito non esiste"));
         // prendi tutti i corsi che fa l'istruttore, se ha già un corso che inizia lo stesso giorno di un'altro
         // bisogna spostare la data di inizio
-        //List <Corso> corsiTenuti = corsoRepo.findCorsiTenutiByEmail(istruttore.getEmail());
-
         for(Corso corso: istruttore.getCorsiTenuti()){
             if(corso.getIstruttoreCorso().getEmail().equals(requestCorso.getEmailIstruttore())){
                 if(corso.getDataInizio().equals(requestCorso.getDataDiInizio()))
@@ -145,6 +142,7 @@ public class CorsoService {
         }else {
             utenteLoggato.getCorsiIscritto().add(corso);
         }
+
         corsoRepo.save(corso);
         utenteRepo.save(utenteLoggato);
 

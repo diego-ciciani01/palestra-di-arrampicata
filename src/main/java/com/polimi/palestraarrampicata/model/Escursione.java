@@ -40,6 +40,6 @@ public class Escursione {
     private Boolean statoEscursione;
 
     @ManyToMany(mappedBy = "escursioniPartecipate", fetch = FetchType.LAZY)
-    private List<Utente> utentiPartecipanti = null;
+    private List<Utente> utentiPartecipanti;
 
 }

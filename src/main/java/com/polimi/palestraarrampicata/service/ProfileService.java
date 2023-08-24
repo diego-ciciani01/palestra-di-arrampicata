@@ -1,6 +1,7 @@
 package com.polimi.palestraarrampicata.service;
 
 import com.polimi.palestraarrampicata.dto.request.RequestLogin;
+import com.polimi.palestraarrampicata.dto.request.RequestModificaUtente;
 import com.polimi.palestraarrampicata.dto.request.RequestRegistrazione;
 import com.polimi.palestraarrampicata.dto.response.AuthenticationResponse;
 import com.polimi.palestraarrampicata.exception.RegistrazioneFallita;
@@ -9,6 +10,7 @@ import com.polimi.palestraarrampicata.model.Utente;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
 import com.polimi.palestraarrampicata.utils.Utils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +38,7 @@ public class ProfileService {
     private final UtenteRepo utenteRepo;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+
 
     public Utente registrazione(RequestRegistrazione requestRegistrazione){
         Utente utente = new Utente();
@@ -97,5 +100,45 @@ public class ProfileService {
 
         return  jwtToken;
     }
+
+    /*
+    public Utente modificaUtente(RequestModificaUtente requestModifica, HttpServletRequest request){
+
+        Utente utenteLoggato = Utils.getUserFromHeader(request,utenteRepo ,jwtUtils );
+        String oldPassword = utenteLoggato.getPassword();
+        boolean usernameModificato = false;
+
+        String nome = requestModifica.getNome();
+        String cognome = requestModifica.getCognome();
+        String username = requestModifica.getUsername();
+        String email = requestModifica.getEmail();
+        String password = requestModifica.getPassword();
+        String fotoProfilo = requestModifica.getFotoProfilo();
+
+        if(utenteRepo.findByUsernameOrEmail(username, email) != null){
+            throw new ModificaFallita("Username o email già in uso");
+        }
+        if(nome != null)
+            utenteLoggato.setNome(nome);
+        if(cognome != null)
+            utenteLoggato.setCognome(cognome);
+        if(username != null)
+            utenteLoggato.setUsername(username);
+        if(email != null)
+            utenteLoggato.setUsername(email);
+        if(password != null && !password.equals(oldPassword)) {
+            utenteLoggato.setPassword(password);
+            usernameModificato = true;
+        }
+        if (fotoProfilo != null){
+            byte[] fotoProfiloByte = Base64.getDecoder().decode(fotoProfilo.getBytes(StandardCharsets.UTF_8));
+            utenteLoggato.setFotoProfilo(fotoProfiloByte);
+        }
+        utenteRepo.save(utenteLoggato);
+        return usernameModificato;
+
+    }
+
+     */
 
 }

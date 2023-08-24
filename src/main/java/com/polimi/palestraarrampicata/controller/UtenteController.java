@@ -21,20 +21,33 @@ public class UtenteController {
 
     private final UtenteService utenteService;
 
-    @GetMapping("/getAll/Inviti/accettati")
-    public ResponseEntity<?> getLessons(HttpServletRequest request){
+    /**
+     * Questo EndPoint permette di ottenere la lista di tutti gli inviti di lezioni private fatte
+     * all'istruttore che sono state accettate dall'istruttore
+     * @param request
+     * @return
+     */
+    @GetMapping("/getAll/inviti/accettati")
+    public ResponseEntity<?> getAllLessonsAccettate(HttpServletRequest request){
         try{
             return ResponseEntity.ok(utenteService.getListInvitiLezioneAccettate(request));
         }catch (EntityNotFoundException ex){
-            return new ResponseEntity<>("non ci sono lezioni disponibili", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("non ci sono lezioni disponibili", HttpStatus.BAD_REQUEST);
         }
     }
+
+    /**
+     * il seguente metodo ritorna una lista di tutte le richiste mandate dall'utente loggato ma che ancora non
+     * sono state approvate dall'istruttore
+     * @param request
+     * @return
+     */
     @GetMapping("/getAllInviti")
     public ResponseEntity<?> getAllLessons(HttpServletRequest request){
         try{
             return ResponseEntity.ok(utenteService.getListInvitiLezione(request));
         }catch (EntityNotFoundException ex){
-            return new ResponseEntity<>("non ci sono lezioni disponibili", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("non ci sono lezioni disponibili", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -69,9 +82,19 @@ public class UtenteController {
         try {
             return ResponseEntity.ok(utenteService.getListCommentifromUtenteToIstruttore(httpServletRequest, idIstruttore));
         }catch (IllegalStateException ex){
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+    /*
+    @PostMapping("valuta/getAvg/{email_istruttore}")
+    public ResponseEntity<?> getAvgValutazioniByIstruttore(@PathVariable("email_istruttore") String email) {
+        try {
+            return ResponseEntity.ok(utenteService.getAvgValutazione(email));
+        } catch (IllegalStateException | EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
+     */
 
 }

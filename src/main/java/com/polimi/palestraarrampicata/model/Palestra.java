@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class Palestra {
 
     @NotNull
     @NotEmpty
+    @Pattern(regexp = Utils.REGEX_EMAIL, message = Utils.ERROR_EMAIL)
+    @Column(name = "email")
+    private String emailPalestra;
+
+    @NotNull
+    @NotEmpty
     @Column(name = "citta")
     private String citta;
 
@@ -49,17 +56,18 @@ public class Palestra {
     private String telefono;
 
     @OneToMany(mappedBy = "iscrittiPalestra", fetch = FetchType.LAZY  )
-    private List<Utente> iscrittiPalestra = null;
+    private List<Utente> iscrittiPalestra;
 
     @OneToMany(mappedBy = "attrezziPalestra", fetch = FetchType.LAZY )
-    private List<Attrezzatura> attrezatura = null;
+    private List<Attrezzatura> attrezatura;
 
 
-    public Palestra(String cap, String citta, String telefono, String indirizzo, String nomePalestra) {
+    public Palestra(String cap, String citta, String telefono, String indirizzo, String nomePalestra, String emailPalestra) {
         this.cap = cap;
         this.citta = citta;
         this.telefono=telefono;
         this.indirizzo = indirizzo;
         this.nome = nomePalestra;
+        this.emailPalestra = emailPalestra;
     }
 }

@@ -46,7 +46,7 @@ public class LezioneService {
         Ruolo ruolo = Ruolo.ISTRUTTORE;
         Utente istruttore = utenteRepo.findUserByEmailAndRuolo(request.getInstructorEmail(), ruolo)
                 .orElseThrow(()->new EntityNotFoundException("L'istruttore non esiste"));
-
+        //cerchiamo l'istruttore e controlliamo se non è già occupato in quelle date
         List<Lezione> list  = lezioneRepo.findAllByIstruttore(istruttore);
         if(!dataIsValid(list, startLesson)) throw  new IllegalStateException("Maestro occupato in queste date");
         float durata = 0;
@@ -107,7 +107,16 @@ public class LezioneService {
         for(int i=0; i<lezioni.size(); i++){
             if(lezioni.get(i).getId() == Integer.parseInt(request.getIdLezione())) {
                 Lezione lezione = lezioni.get(i);
-                lezione.setStatoLezione(Boolean.valueOf(request.getAccetta()));
+                if(Boolean.valueOf(request.getAccetta())){
+                    lezione.setStatoLezione(Boolean.valueOf(request.getAccetta()));
+                    if(lezione.getUtentiInvitati().isEmpty()){
+                        List<Utente> utentiInvitati = new ArrayList<>();
+                        utentiInvitati = lezione.getUtentiInvitati();
+                        lezione.setUtentiPartecipanti(utentiInvitati);
+                    }else {
+                        lezione.getUtentiInvitati().forEach(elem -> lezione.getUtentiPartecipanti().add(elem));
+                    }
+                }
                 lezione.setCommento(request.getCommento());
                 lezioneRepo.save(lezione);
                 return lezione;

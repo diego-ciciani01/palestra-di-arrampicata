@@ -42,43 +42,6 @@ public class UtenteService implements UserDetailsService {
         return utenteRepo.findUserByEmail(email).orElseThrow(()-> new IllegalStateException("l'utente non è stato trovato"));
     }
 
-    /*
-    public Utente modificaUtente(RequestModificaUtente requestModifica, HttpServletRequest request){
-        Utente utenteLoggato = Utils.getUtenteFromHeader(request, utenteRepo);
-        String oldPassword = utenteLoggato.getPassword();
-        boolean usernameModificato = false;
-
-        String nome = requestModifica.getNome();
-        String cognome = requestModifica.getCognome();
-        String username = requestModifica.getUsername();
-        String email = requestModifica.getEmail();
-        String password = requestModifica.getPassword();
-        String fotoProfilo = requestModifica.getFotoProfilo();
-
-        if(utenteRepo.findByUsernameOrEmail(username, email) != null){
-            throw new ModificaFallita("Username o email già in uso");
-        }
-        if(nome != null)
-            utenteLoggato.setNome(nome);
-        if(cognome != null)
-            utenteLoggato.setCognome(cognome);
-        if(username != null)
-            utenteLoggato.setUsername(username);
-        if(email != null)
-            utenteLoggato.setUsername(email);
-        if(password != null && !password.equals(oldPassword)) {
-            utenteLoggato.setPassword(password);
-            usernameModificato = true;
-        }
-        if (fotoProfilo != null){
-            byte[] fotoProfiloByte = Base64.getDecoder().decode(fotoProfilo.getBytes(StandardCharsets.UTF_8));
-            utenteLoggato.setFotoProfilo(fotoProfiloByte);
-        }
-        utenteRepo.save(utenteLoggato);
-        return usernameModificato;
-
-    }
-*/
     public List<ResponseLezione> getListInvitiLezione(HttpServletRequest httpServletRequest) throws EntityNotFoundException{
 
         List<ResponseLezione> lezioneList = new ArrayList<>();
@@ -127,7 +90,6 @@ public class UtenteService implements UserDetailsService {
         try{
             Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
             LocalDateTime dataPubblicazione = Utils.withoutSeconds(LocalDateTime.now());
-            //Integer idIstruttoreCommentato = Integer.parseInt(requestCommento.getEmailIstruttoreCommentato());
             Utente  istruttore =  utenteRepo.findByEmail(requestCommento.getEmailIstruttoreCommentato());
             Integer idIstruttoreCommentato = istruttore.getId();
             Commento commentoNuovo = new Commento();
@@ -206,6 +168,14 @@ public class UtenteService implements UserDetailsService {
         return responseCommenti;
 
     }
+    /*
+    public String getAvgValutazione(String email){
+        Utente istruttore = utenteRepo.findUserByEmailAndRuolo(email, Ruolo.ISTRUTTORE).orElseThrow(() -> new EntityNotFoundException("l'istruttore inserito non esiste"));
+        double avg = valutazioneRepo.getValutazioneOrganizzatore(istruttore.getId());
 
+        return "la media delle valutazione dell'istruttore "+ istruttore.getEmail() +" è "+ Double.toString(avg);
+
+    }
+     */
 
 }

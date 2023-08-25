@@ -90,7 +90,7 @@ public class UtenteService implements UserDetailsService {
         try{
             Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
             LocalDateTime dataPubblicazione = Utils.withoutSeconds(LocalDateTime.now());
-            Utente  istruttore =  utenteRepo.findByEmail(requestCommento.getEmailIstruttoreCommentato());
+            Utente  istruttore =  utenteRepo.findByEmail(requestCommento.getEmailIstruttoreCommentato()).orElse(null);
             Integer idIstruttoreCommentato = istruttore.getId();
             Commento commentoNuovo = new Commento();
 
@@ -123,8 +123,8 @@ public class UtenteService implements UserDetailsService {
 
     public Valutazione creaValutazione(HttpServletRequest httpServletRequest, RequestValutazione requestValutazione){
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
-        Utente istruttoreDaValutare = null;
-        istruttoreDaValutare=  utenteRepo.findByEmail(requestValutazione.getEmailValutato());
+
+        Utente istruttoreDaValutare=  utenteRepo.findByEmail(requestValutazione.getEmailValutato()).orElse(null);
 
         if(istruttoreDaValutare == null){
             throw new InserimentoValutazioneFallita("Utente da valutare inserito non esistente");

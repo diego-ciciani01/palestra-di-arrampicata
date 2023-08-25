@@ -67,16 +67,16 @@ public class Stub {
 
     public static Commento getCommentiFiglioStub(){
         Commento commento = new Commento();
-        commento.setId(2);
         commento.setTesto("Grazie mille per il feedback, se vuoi puoi lasciare una valutazione");
         commento.setDataInserimento(Utils.formatterDataTime("15/05/2023 12:00"));
+        commento.setIstruttoreCommentato(getInstructorStub());
         return commento;
     }
 
     public static RequestCommento getRequestCommento(){
         RequestCommento requestCommento = new RequestCommento();
-        requestCommento.setTesto("Ciao mi sono trovato molto bene a fare la lezione con te");
-        requestCommento.setEmailIstruttoreCommentato("istruttore1@gmail.com");
+        requestCommento.setTesto("Grazie mille per il feedback, se vuoi puoi lasciare una valutazione");
+        requestCommento.setIdCommentoPadre("2");
 
         return requestCommento;
     }

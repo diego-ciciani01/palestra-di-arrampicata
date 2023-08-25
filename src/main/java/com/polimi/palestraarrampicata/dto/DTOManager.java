@@ -40,7 +40,7 @@ public class DTOManager {
     public static ResponseCommento ToResponseCommentoBYCommento(Commento commento){
         return ResponseCommento.builder()
                 .id(commento.getId().toString())
-                .emailIstruttore(commento.getIstruttoreCommentato().getEmail())
+             //   .emailIstruttore(commento.getIstruttoreCommentato().getEmail())
                 .testo(commento.getTesto())
                 .build();
     }

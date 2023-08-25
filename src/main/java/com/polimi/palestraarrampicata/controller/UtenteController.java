@@ -3,6 +3,7 @@ package com.polimi.palestraarrampicata.controller;
 import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestCommento;
 import com.polimi.palestraarrampicata.dto.request.RequestValutazione;
+import com.polimi.palestraarrampicata.dto.response.ResponseCommento;
 import com.polimi.palestraarrampicata.service.UtenteService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,9 +62,10 @@ public class UtenteController {
         }
     }
     @PostMapping("commenta/istruttore")
-    public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, BindingResult result, HttpServletRequest request){
+    public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, HttpServletRequest request){
         try{
-            return ResponseEntity.ok(DTOManager.ToResponseCommentoBYCommento(utenteService.creaCommento(request, requestCommento)));
+             ResponseCommento responseCommento =  DTOManager.ToResponseCommentoBYCommento(utenteService.creaCommento(request, requestCommento));
+            return ResponseEntity.ok(responseCommento);
         }catch (IllegalStateException | EntityNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -81,6 +83,7 @@ public class UtenteController {
     public ResponseEntity<?> getAllCommenti(@PathVariable("id_istruttore") Integer idIstruttore, HttpServletRequest httpServletRequest){
         try {
             return ResponseEntity.ok(utenteService.getListCommentifromUtenteToIstruttore(httpServletRequest, idIstruttore));
+
         }catch (IllegalStateException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

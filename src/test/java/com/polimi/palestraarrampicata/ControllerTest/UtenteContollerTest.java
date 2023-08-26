@@ -180,8 +180,11 @@ public class UtenteContollerTest {
         Valutazione valutazione = Stub.getValutazioneStub();
         RequestValutazione requestValutazione = Request.toRequestValutazioneByValutazioneMapper(valutazione);
         requestValutazione.setEmailValutato(null);
-        given(utenteService.creaValutazione( any(), any())).willThrow((new InserimentoValutazioneFallita("inserimento valutazione fallita")));
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/user/valuta/istruttore"))
+        String requestValutazione_asString = new ObjectMapper().writeValueAsString(requestValutazione);
+        given(utenteService.creaValutazione( any(), any())).willThrow(new IllegalStateException() );
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/user/valuta/istruttore")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestValutazione_asString))
                 .andExpect(status().isInternalServerError());
 
     }

@@ -43,7 +43,7 @@ public class Stub {
         return  inivitiUtenteAccettati;
     }
 
-    public static Corso getCorspStub(){
+    public static Corso getCorsoStub(){
         Corso corso = new Corso();
         corso.setDataInizio(Utils.formatterData("12/03/2023"));
         corso.setNome("arrampicata per principianti");
@@ -51,7 +51,6 @@ public class Stub {
         corso.setDifficolta(Difficolta.FACILE);
         corso.setId(1);
         corso.setCosto(60.34f);
-        corso.setIscritti(getListUtentiStub());
 
         return  corso;
     }
@@ -61,9 +60,28 @@ public class Stub {
         commento.setIstruttoreCommentato(getInstructorStub());
         commento.setTesto("Ciao mi sono trovato molto bene a fare la lezione con te");
         commento.setId(1);
-        commento.setDataInserimento(Utils.formatterDataTime("15/05/2023 16:00"));
+        //commento.setDataInserimento(Utils.formatterDataTime("15/05/2023 16:00"));
         return commento;
     }
+
+    public static List<Commento> getListCommenti(){
+        List<Commento> commentiList = new ArrayList<>();
+        for(int i=0; i<3; i++){
+            Commento commento = new Commento();
+            if(i!=0){
+                commento.setCommentoPadre(commentiList.get(i-1));
+            }
+            commento.setTesto("commento n " + i);
+            commento.setDataInserimento(Utils.formatterDataTime("15/05/2023 12:00"));
+            commento.setIstruttoreCommentato(getInstructorStub());
+            commento.setId(i);
+            commento.setCommentatore(getUtenteStub());
+            commentiList.add(commento);
+        }
+        return commentiList;
+
+    }
+
 
     public static Commento getCommentiFiglioStub(){
         Commento commento = new Commento();
@@ -96,6 +114,7 @@ public class Stub {
         istruttore.setId(1);
         istruttore.setNome("Marco");
         istruttore.setRuolo(Ruolo.ISTRUTTORE);
+        istruttore.setEmail("marco.grelloni@gmail.com");
         istruttore.setCognome("Grelloni");
         return istruttore;
     }
@@ -112,7 +131,7 @@ public class Stub {
         return palestra1;
     }
 
-    public static  Utente getUtenteStub(){
+    public static Utente getUtenteStub(){
         Utente utente = new Utente();
         utente.setId(5);
         utente.setNome("Diego");
@@ -120,7 +139,7 @@ public class Stub {
         utente.setEmail("diego.ciciani@gmail.com");
         utente.setRuolo(Ruolo.UTENTE);
         utente.setPassword("password");
-        return  utente;
+        return utente;
 
     }
     public static String getJwtStub_User() {
@@ -139,6 +158,7 @@ public class Stub {
             utente.setEscursioniPartecipate((List<Escursione>) getEscursioneStub());
             utente.setInviti(getAllInvitiLezioneStub());
             utente.setIscrittiPalestra(getPalestraStub());
+            utentiList.add(utente);
         }
     return utentiList;
     }
@@ -151,6 +171,7 @@ public class Stub {
             taglia.setQuantita(10);
             taglia.setTagliaAttrezzo(Integer.toString(i));
             taglia.setAttrezzo(getAttrezzoStub());
+            taglie.add(taglia);
         }
         return taglie;
     }
@@ -186,6 +207,7 @@ public class Stub {
             attrezzo.setNomeTaglia(getListTaglieStub());
             attrezzo.setNomeAttrezzatura("corda_"+i);
             attrezzo.setAttrezziPalestra(getPalestraStub());
+            attrezzi.add(attrezzo);
         }
         return  attrezzi;
     }
@@ -203,7 +225,9 @@ public class Stub {
                             .utentiInvitati(getListUtentiStub())
                             .istruttore(getInstructorStub())
                             .build()
+
             );
+
         }
         return lezioniInviti;
     }

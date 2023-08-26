@@ -154,6 +154,7 @@ public class UtenteService implements UserDetailsService {
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
         Utente istruttore = utenteRepo.findById(idIstruttore).orElseThrow(() -> new EntityNotFoundException("l'istruttore inserito non esiste"));
         List<Commento> commentiUtente = commentoRepo.findAllByCommentatoreAndIstruttoreCommentato(utenteLoggato, istruttore);
+
         if(commentiUtente==null)
             throw new EntityNotFoundException("non ci sono commenti fatti verso l'istuttore " + istruttore.getEmail());
 

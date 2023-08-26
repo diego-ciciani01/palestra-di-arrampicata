@@ -13,7 +13,6 @@ public class Request {
 
     public static RequestCommento toRequestCommentoByCommentoMapper(Commento commento){
         RequestCommento requestCommento = new RequestCommento();
-        requestCommento.setIdCommentoPadre( commento.getCommentoPadre().getId().toString());
         requestCommento.setEmailIstruttoreCommentato(commento.getIstruttoreCommentato().getEmail());
         requestCommento.setTesto(commento.getTesto());
 

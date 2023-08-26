@@ -53,7 +53,7 @@ public class UtenteController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @DeleteMapping("/delete/user/{email}")
+    @DeleteMapping("/delete/email/{email}")
     public ResponseEntity<String> deleteUtente(@PathVariable("email") String email){
         try{
             return ResponseEntity.ok(utenteService.deleteUserByEmail(email));
@@ -79,12 +79,12 @@ public class UtenteController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PostMapping("commenti/getAllByIstruttore/{id_istruttore}")
+    @GetMapping("commenti/getAllByIstruttore/{id_istruttore}")
     public ResponseEntity<?> getAllCommenti(@PathVariable("id_istruttore") Integer idIstruttore, HttpServletRequest httpServletRequest){
         try {
             return ResponseEntity.ok(utenteService.getListCommentifromUtenteToIstruttore(httpServletRequest, idIstruttore));
 
-        }catch (IllegalStateException ex){
+        }catch (IllegalStateException | EntityNotFoundException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

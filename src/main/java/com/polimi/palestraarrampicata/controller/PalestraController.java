@@ -4,6 +4,7 @@ import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestIscrivitiPalestra;
 import com.polimi.palestraarrampicata.dto.request.RequestPalestra;
 import com.polimi.palestraarrampicata.dto.response.ResponsePalestra;
+import com.polimi.palestraarrampicata.dto.response.ResponseUtente;
 import com.polimi.palestraarrampicata.service.PalestraService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/palestra")
@@ -53,7 +55,8 @@ public class PalestraController {
     @GetMapping("/getAll/iscrittiByPalestra/{palestra_email}")
     public ResponseEntity<?> getAllUtentiByPalestra(@PathVariable("palestra_email") String palestaEmail){
         try{
-            return ResponseEntity.ok(DTOManager.toUserResponseByUsers(palestraService.getAllIscrittiBYEmailPalestra(palestaEmail)));
+              List<ResponseUtente> responseUtenteList = DTOManager.toUserResponseByUsers(palestraService.getAllIscrittiBYEmailPalestra(palestaEmail));
+                return ResponseEntity.ok(responseUtenteList);
         }catch (IllegalStateException enf){
             return new ResponseEntity<>(ResponsePalestra.builder().message(enf.getMessage()).build(), HttpStatus.BAD_REQUEST);
         }
@@ -76,5 +79,6 @@ public class PalestraController {
            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
        }
     }
+
 
 }

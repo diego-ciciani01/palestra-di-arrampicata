@@ -2,11 +2,14 @@ package com.polimi.palestraarrampicata.controller;
 
 import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestLogin;
+import com.polimi.palestraarrampicata.dto.request.RequestModificaUtente;
 import com.polimi.palestraarrampicata.dto.request.RequestRegistrazione;
 import com.polimi.palestraarrampicata.exception.LoginFallito;
 import com.polimi.palestraarrampicata.exception.RegistrazioneFallita;
 import com.polimi.palestraarrampicata.service.ProfileService;
 import com.polimi.palestraarrampicata.utils.Utils;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,33 +64,20 @@ public class ProfiloContoller {
         }
     }
 
-/*
-    public ResponseEntity<?> modifica(@Valid @RequestBody RequestModificaUtente requestModifica, BindingResult result, HttpServletRequest request){
-        try{
-            if(!requestModifica.isEmpty()){
-                return new ResponseEntity<>("deve essere fatta almeno una modifica al parametro", HttpStatus.BAD_REQUEST);
-            }
-            if(result.hasErrors()){
-                return  new ResponseEntity<>(Utils.getErrori(result), HttpStatus.BAD_REQUEST);
-            }
-            boolean utenetModificato = utenteService.modificaUtente(requestModifica, request);
+    @PostMapping(value = "/modifica", consumes = "application/json")
+    public ResponseEntity<?> modifica(@Valid @RequestBody RequestModificaUtente requestModifica, BindingResult result, HttpServletRequest request) {
+        try {
 
-            if(utenetModificato){
-                Utente utente = utenteService.findByUsername(requestModifica.getUsername());
-                ResponseModificaUtente responseModificaUtente = new ResponseModificaUtente(utente);
-                return new ResponseEntity<>(responseModificaUtente, HttpStatus.OK);
+            if (result.hasErrors()) {
+                return new ResponseEntity<>(Utils.getErrori(result), HttpStatus.BAD_REQUEST);
             }
-
-            return new ResponseEntity<String>(HttpStatus.OK);
-        }catch (ModificaFallita e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception e) {
+            return ResponseEntity.ok(profileService.modificaUtente(requestModifica, request));
+        }catch (EntityNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
+    /*
+    @PostMapping(value = "/logout", consumes = "application/json")
     public void logout(HttpServletRequest request){
         HttpSession session = request.getSession(false);
         if (session != null) {

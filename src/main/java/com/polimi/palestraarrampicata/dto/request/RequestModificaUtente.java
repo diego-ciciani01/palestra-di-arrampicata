@@ -1,31 +1,31 @@
 package com.polimi.palestraarrampicata.dto.request;
 
+import com.polimi.palestraarrampicata.utils.Utils;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 @Data
 public class RequestModificaUtente {
+
+    @NotNull
+    @NotEmpty
     private String nome;
 
+    @NotEmpty
+    @NotNull
     private String cognome;
 
-    private String username;
-
-    @Pattern(regexp="^[\\w!#$%&amp;'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&amp;'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$",
-            message = "Inserire un indirizzo email valido")
+    @NotEmpty
+    @Pattern(regexp= Utils.REGEX_EMAIL, message = Utils.ERROR_EMAIL)
     private  String email;
 
     private String fotoProfilo;
-    @Size(min = 32, max = 32, message = "L'hash della password deve essere lungo 32 caratteri (MD5 hash)")
+
+    @Pattern(regexp = Utils.REGEX_PASSWORD, message = Utils.ERROR_PASSWORD)
     private String password;
 
-    public boolean isEmpty() {
-        return  nome == null &&
-                cognome == null &&
-                username == null &&
-                email == null &&
-                password == null &&
-                fotoProfilo == null;
-    }
+
 }

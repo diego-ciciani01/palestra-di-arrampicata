@@ -1,7 +1,10 @@
 package com.polimi.palestraarrampicata.dto.request;
 import com.polimi.palestraarrampicata.utils.Utils;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -9,6 +12,8 @@ import javax.validation.constraints.Pattern;
 
 @Data
 @AllArgsConstructor
+@Builder
+@RequiredArgsConstructor
 public class RequestIscrivitiPalestra {
 
     @NotNull

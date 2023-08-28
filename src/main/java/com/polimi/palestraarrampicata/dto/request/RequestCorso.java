@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 @Data
 @RequiredArgsConstructor
-@ToString
 public class RequestCorso {
 
     @NotBlank(message = "il corso deve avere un costo")

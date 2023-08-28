@@ -4,6 +4,7 @@ import com.polimi.palestraarrampicata.dto.request.RequestLogin;
 import com.polimi.palestraarrampicata.dto.request.RequestModificaUtente;
 import com.polimi.palestraarrampicata.dto.request.RequestRegistrazione;
 import com.polimi.palestraarrampicata.dto.response.AuthenticationResponse;
+import com.polimi.palestraarrampicata.exception.ModificaFallita;
 import com.polimi.palestraarrampicata.exception.RegistrazioneFallita;
 import com.polimi.palestraarrampicata.model.Ruolo;
 import com.polimi.palestraarrampicata.model.Utente;
@@ -29,6 +30,8 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -46,9 +49,13 @@ public class ProfileService {
         try{
             String username = requestRegistrazione.getEmail();
 
-            if (utenteRepo.findUserByEmail(username).isPresent()){
+            if (utenteRepo.findUserByEmail(username).isPresent())
                 throw new RegistrazioneFallita("Username o Email già in uso");
-            }
+
+            Pattern pattern = Pattern.compile(Utils.REGEX_EMAIL);
+            Matcher matcher = pattern.matcher(requestRegistrazione.getEmail());
+            if(matcher.matches() == false) throw new IllegalStateException("l'email inserita non è corretta");
+
             utente.setNome(requestRegistrazione.getNome());
             utente.setCognome(requestRegistrazione.getCognome());
             utente.setEmail(requestRegistrazione.getEmail());
@@ -101,8 +108,8 @@ public class ProfileService {
         return  jwtToken;
     }
 
-    /*
-    public Utente modificaUtente(RequestModificaUtente requestModifica, HttpServletRequest request){
+
+    public String modificaUtente(RequestModificaUtente requestModifica, HttpServletRequest request){
 
         Utente utenteLoggato = Utils.getUserFromHeader(request,utenteRepo ,jwtUtils );
         String oldPassword = utenteLoggato.getPassword();
@@ -110,22 +117,19 @@ public class ProfileService {
 
         String nome = requestModifica.getNome();
         String cognome = requestModifica.getCognome();
-        String username = requestModifica.getUsername();
         String email = requestModifica.getEmail();
         String password = requestModifica.getPassword();
         String fotoProfilo = requestModifica.getFotoProfilo();
 
-        if(utenteRepo.findByUsernameOrEmail(username, email) != null){
+        if(utenteRepo.findByEmail(email) != null){
             throw new ModificaFallita("Username o email già in uso");
         }
         if(nome != null)
             utenteLoggato.setNome(nome);
         if(cognome != null)
             utenteLoggato.setCognome(cognome);
-        if(username != null)
-            utenteLoggato.setUsername(username);
         if(email != null)
-            utenteLoggato.setUsername(email);
+            utenteLoggato.setEmail(email);
         if(password != null && !password.equals(oldPassword)) {
             utenteLoggato.setPassword(password);
             usernameModificato = true;
@@ -135,10 +139,9 @@ public class ProfileService {
             utenteLoggato.setFotoProfilo(fotoProfiloByte);
         }
         utenteRepo.save(utenteLoggato);
-        return usernameModificato;
+        return "utente modificato correttamente";
 
     }
 
-     */
 
 }

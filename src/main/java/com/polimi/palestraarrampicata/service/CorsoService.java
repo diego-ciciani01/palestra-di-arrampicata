@@ -29,7 +29,7 @@ public class CorsoService {
     private final JwtUtils jwtUtils;
 
     public Corso creaCorso(RequestCorso requestCorso) throws EntityNotFoundException {
-        LocalDate inizioCorso = Utils.formatterData(requestCorso.getDataDiInizio().toString());
+        LocalDate inizioCorso = Utils.formatterData(requestCorso.getDataDiInizio());
         Utente istruttore = utenteRepo.findUserByEmailAndRuolo(requestCorso.getEmailIstruttore(), Ruolo.ISTRUTTORE)
                 .orElseThrow(()-> new EntityNotFoundException("L'istruttore inserito non esiste"));
         // prendi tutti i corsi che fa l'istruttore, se ha già un corso che inizia lo stesso giorno di un'altro
@@ -73,7 +73,9 @@ public class CorsoService {
     }
 
     public ResponseCorso eliminaCorso(Integer idCorso)throws EntityNotFoundException{
-         Corso corsoDaEliminare =  corsoRepo.findById(idCorso).orElse(null);
+         Corso corsoDaEliminare =  corsoRepo.findById(idCorso)
+                 .orElseThrow(()-> new IllegalStateException("il corso da eliminare non esiste"));
+
          corsoRepo.delete(corsoDaEliminare);
 
          return ResponseCorso.builder()

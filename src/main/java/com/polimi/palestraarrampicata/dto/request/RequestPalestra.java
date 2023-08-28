@@ -3,6 +3,7 @@ package com.polimi.palestraarrampicata.dto.request;
 import com.polimi.palestraarrampicata.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class RequestPalestra {
 
     @NotNull

@@ -78,6 +78,18 @@ public class AttrezzaturaService {
         }
         return attrezzaturaResponse;
     }
+
+    /**
+     * il noleggio attrezzatura permette di noleggiare un attrezzo da palestra: all'interno del metodo vengono
+     * passati: l'utente loggato e la riquest per il noleggio, all'interno del metodo vegono fatti controlli su
+     * data di inizio e fine noleggio, presenza o meno dell'attrezzo in magazino, presenza o meno della taglia
+     * scelta, nel caso tutti i contrilli risulano superati, il noleggio risulta possibile quindi si passa alla
+     * modifica sulla  classe repository, che va ad aggiornare i dati all'interno del db
+     * @param httpServletRequest
+     * @param requestAttrezzatura
+     * @return
+     * @throws EntityNotFoundException
+     */
     public Attrezzatura noleggiaAttrazzatura(HttpServletRequest httpServletRequest, RequestNoleggiaAttrezzatura requestAttrezzatura) throws EntityNotFoundException{
 
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
@@ -87,7 +99,7 @@ public class AttrezzaturaService {
 
         LocalDateTime inizioNoleggio = Utils.formatterDataTime(requestAttrezzatura.getDataInizioNoleggio());
         LocalDateTime fineNoleggio = Utils.formatterDataTime(requestAttrezzatura.getDataFineNoleggio());
-
+        //controllo sui datti presi
         if(tagliaCercata == null)
             throw new RicercaFallita("la taglia " + requestAttrezzatura.getTaglia() + " non è al momento presente in magazzino");
 

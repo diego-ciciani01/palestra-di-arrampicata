@@ -63,7 +63,6 @@ public class DTOManager {
                         ResponseUtente.builder()
                                 .id(u.getId().toString())
                                 .nome(u.getNome())
-                                .username(u.getUsername())
                                 .fotoProfilo(u.getFotoProfilo())
                                 .ruolo(u.getRuolo())
                                 .email(u.getEmail())

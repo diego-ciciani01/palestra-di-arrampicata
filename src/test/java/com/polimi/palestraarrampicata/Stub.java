@@ -1,8 +1,7 @@
 package com.polimi.palestraarrampicata;
 
-import com.polimi.palestraarrampicata.dto.request.RequestCommento;
-import com.polimi.palestraarrampicata.dto.request.RequestIscrivitiPalestra;
-import com.polimi.palestraarrampicata.dto.response.ResponseLezione;
+import com.polimi.palestraarrampicata.dto.request.*;
+import com.polimi.palestraarrampicata.dto.response.*;
 import com.polimi.palestraarrampicata.model.*;
 import com.polimi.palestraarrampicata.service.LezioneService;
 import com.polimi.palestraarrampicata.utils.Utils;
@@ -51,8 +50,25 @@ public class Stub {
         corso.setDifficolta(Difficolta.FACILE);
         corso.setId(1);
         corso.setCosto(60.34f);
+        corso.setIstruttoreCorso(getInstructorStub());
 
         return  corso;
+    }
+
+    public static List<Corso> getListCorsoStub(){
+        List<Corso> corso = new ArrayList<>();
+        for(int i = 0; i<4; i++){
+            corso.add(
+                    new Corso().builder()
+                            .settimaneDiCorso(i)
+                            .id(i)
+                            .istruttoreCorso(getInstructorStub())
+                            .dataInizio(Utils.formatterData("12/01/2023"))
+                            .costo(60f)
+                            .nome("corso" + i)
+                            .build());
+        }
+        return corso;
     }
 
     public static Commento getCommentoPadreStub(){
@@ -120,14 +136,13 @@ public class Stub {
     }
     public static  Palestra getPalestraStub(){
         Palestra palestra1 = new Palestra();
-        palestra1.setId(1);
-        palestra1.setIscrittiPalestra(getListUtentiStub());
-        palestra1.setNome("Monkei");
-        palestra1.setEmailPalestra("monkei.climbing@gmail.com");
+        palestra1.setId(4);
+        palestra1.setNome("manga");
+        palestra1.setEmailPalestra("manga.climbing@gmail.com");
         palestra1.setCap("00066");
         palestra1.setCitta("Manziana");
         palestra1.setIndirizzo("Via Delle Fornaci");
-        palestra1.setTelefono("3422283456");
+        palestra1.setTelefono("3463283458");
         return palestra1;
     }
 
@@ -147,17 +162,15 @@ public class Stub {
     }
     public static List<Utente> getListUtentiStub(){
         List<Utente> utentiList = new ArrayList<>();
-        for(int i=1; i<4; i++){
+        for(int i=0; i<1; i++){
             Utente utente = new Utente();
             utente.setId(i);
             utente.setNome("_user_" + i);
-            utente.setCognome("_cognome_" + i);
+            utente.setFotoProfilo(null);
             utente.setRuolo(Ruolo.UTENTE);
             utente.setEmail(i + "useremail@email.com");
-            utente.setPassword("password"+i);
-            utente.setEscursioniPartecipate((List<Escursione>) getEscursioneStub());
-            utente.setInviti(getAllInvitiLezioneStub());
-            utente.setIscrittiPalestra(getPalestraStub());
+            utente.setPassword("password"+i);;
+            utente.setDataDiNascita(Utils.formatterData("28/06/2001"));
             utentiList.add(utente);
         }
     return utentiList;
@@ -188,14 +201,35 @@ public class Stub {
 
     public static Attrezzatura getAttrezzoStub(){
         Attrezzatura attrezzo = new Attrezzatura();
-        attrezzo.setId(6);
+        attrezzo.setId(1);
         attrezzo.setAttrezziPalestra(getPalestraStub());
         attrezzo.setDisponibilita(true);
-        attrezzo.setNomeTaglia(getListTaglieStub());
         attrezzo.setNomeAttrezzatura("imbrago");
 
         return attrezzo;
 
+    }
+
+    public static ResponseCorso getResponseCorsoStub(){
+        ResponseCorso responseCorso = new ResponseCorso();
+        responseCorso.setId("2");
+        responseCorso.setNome("corso base");
+        responseCorso.setEmailIstruttore("istruttore1@gmail.com");
+        return  responseCorso;
+    }
+
+    public static List<ResponseCorso> getListResponseCorsoStub(){
+        List<ResponseCorso> responseCorso = new ArrayList<>();
+        for(Integer i=0; i<3; i++){
+            responseCorso.add(
+                    ResponseCorso.builder()
+                            .nome("corso"+i)
+                            .numeroSettimane(i)
+                            .id(i.toString())
+                            .emailIstruttore(getInstructorStub().getEmail())
+                            .build());
+        }
+        return responseCorso;
     }
 
     public static List<Attrezzatura> getListAttrezziStub(){
@@ -204,12 +238,21 @@ public class Stub {
             Attrezzatura attrezzo = new Attrezzatura();
             attrezzo.setId(i);
             attrezzo.setDisponibilita(true);
-            attrezzo.setNomeTaglia(getListTaglieStub());
             attrezzo.setNomeAttrezzatura("corda_"+i);
             attrezzo.setAttrezziPalestra(getPalestraStub());
             attrezzi.add(attrezzo);
         }
         return  attrezzi;
+    }
+     public  static RequestAttrezzatura getRequestAttrezzaturaStub(){
+        RequestAttrezzatura requestAttrezzatura = new RequestAttrezzatura();
+        requestAttrezzatura.setIdPalestraPossessore(getPalestraStub().getId().toString());
+        requestAttrezzatura.setNomeAttrezzo("imbrago");
+        requestAttrezzatura.setDisponibilita("true");
+        requestAttrezzatura.setQuantita("10");
+
+        return requestAttrezzatura;
+
     }
 
     public static List<Lezione> getAllInvitiLezioneStub(){
@@ -231,4 +274,67 @@ public class Stub {
         }
         return lezioniInviti;
     }
+    public static List<Palestra> getListPalestraStub(){
+        List<Palestra> palestraList = new ArrayList<>();
+        for (int i =0; i<4; i++){
+            palestraList.add(
+                    Palestra.builder()
+                            .id(i)
+                            .cap("0000"+i)
+                            .emailPalestra("palestra"+i+"@gmail.com")
+                            .citta("citta" +1)
+                            .indirizzo("via roma n " + i)
+                            .nome("arrampichiamocitutti"+i)
+                            .build()
+            );
+        }
+        return palestraList;
+    }
+
+    public static RequestIscriviti getRequestIscrizione(){
+        RequestIscriviti requestIscriviti = new RequestIscriviti();
+        requestIscriviti.setId(1);
+        return  requestIscriviti;
+    }
+
+    public static List <ResponseAttrezzatura> getResponseAttrezzaturaList(){
+        List <ResponseAttrezzatura> responseAttrezzaturaList = new ArrayList<>();
+        for(Integer i=0; i<3;i++){
+            responseAttrezzaturaList.add(
+                    ResponseAttrezzatura.builder()
+                            .nomeAttrezzo("attrezzo"+i)
+                            .quantitaDisponibile(5)
+                            .disponibilita(true)
+                            .nomeAttrezzo("imbrago")
+                            .id(i.toString())
+                            .nomePalestraAppartenente(getPalestraStub().getNome())
+                            .build()
+            );
+        }
+        return responseAttrezzaturaList;
+    }
+
+    public static List<ResponsePalestra> getListResponsePalestraStub(){
+        List<ResponsePalestra> responsePalestraList = new ArrayList<>();
+        for(Integer i =0; i<4; i++){
+            responsePalestraList.add(
+                   ResponsePalestra.builder()
+                           .nome("arrampichiamocitutti"+i)
+                           .id(i.toString())
+                           .build());
+        }
+        return responsePalestraList;
+    }
+
+    public static RequestNoleggiaAttrezzatura getRequesNoleggioStub(){
+        RequestNoleggiaAttrezzatura requestNoleggiaAttrezzatura = new RequestNoleggiaAttrezzatura();
+        requestNoleggiaAttrezzatura.setQuantita("3");
+        requestNoleggiaAttrezzatura.setNomeAttrezzo("imbrago");
+        requestNoleggiaAttrezzatura.setTaglia("M");
+        requestNoleggiaAttrezzatura.setDataInizioNoleggio("14/11/2023");
+        requestNoleggiaAttrezzatura.setDataFineNoleggio("17/11/2023");
+
+        return requestNoleggiaAttrezzatura;
+    }
+
 }

@@ -3,6 +3,7 @@ package com.polimi.palestraarrampicata.model;
 import com.polimi.palestraarrampicata.utils.Utils;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "palestra")
 public class Palestra {
     @Id

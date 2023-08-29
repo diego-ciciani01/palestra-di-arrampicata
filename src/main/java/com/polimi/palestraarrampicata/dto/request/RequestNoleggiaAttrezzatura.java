@@ -1,9 +1,7 @@
 package com.polimi.palestraarrampicata.dto.request;
 
 import com.polimi.palestraarrampicata.utils.Utils;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -15,6 +13,8 @@ import javax.validation.constraints.Pattern;
  */
 @Data
 @RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 @ToString
 public class RequestNoleggiaAttrezzatura {
 

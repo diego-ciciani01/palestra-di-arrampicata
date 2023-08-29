@@ -29,7 +29,7 @@ public class LezioneController {
     private LezioneService lezioneService;
 
     @PostMapping(value = "/crea", consumes = "application/json")
-    public ResponseEntity<?> createLesson(@Valid @RequestBody RequestLezione requestLezione, BindingResult result, HttpServletRequest request) {
+    public ResponseEntity<?> createLesson(@Valid @RequestBody RequestLezione requestLezione, HttpServletRequest request) {
         try{
             return ResponseEntity.ok(DTOManager.toLessonResponseByLesson(lezioneService.createLesson(requestLezione, request)));
         }catch (IllegalStateException | EntityNotFoundException | DateTimeException  ex){
@@ -48,9 +48,8 @@ public class LezioneController {
     }
 
     @PostMapping(value = "/invito/accetta", consumes = "application/json")
-    //@PreAuthorize("hasRole('ROLE_'+T(com.polimi.palestraarrampicata.model.Ruolo).ISTRUTTORE)")
     @PreAuthorize("hasAuthority('ISTRUTTORE')")
-    public ResponseEntity<?> accettaInvito(@Valid @RequestBody RequestAccettaRiffiuta requestAccettaRifiuta,BindingResult result,  HttpServletRequest request){
+    public ResponseEntity<?> accettaInvito(@Valid @RequestBody RequestAccettaRiffiuta requestAccettaRifiuta,  HttpServletRequest request){
         try{
             return ResponseEntity.ok(DTOManager.ToResposeIstruttoreByLesson(lezioneService.accettaRifiutaLezione(requestAccettaRifiuta, request)));
         }catch (EntityNotFoundException | IllegalStateException ex){

@@ -62,7 +62,7 @@ public class UtenteController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    @PostMapping("commenta/istruttore")
+    @PostMapping("/commenta/istruttore")
     public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, HttpServletRequest request){
         try{
              ResponseCommento responseCommento =  DTOManager.ToResponseCommentoBYCommento(utenteService.creaCommento(request, requestCommento));

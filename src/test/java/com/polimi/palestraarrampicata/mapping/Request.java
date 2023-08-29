@@ -53,4 +53,42 @@ public class Request {
         return requestIscrivitiPalestra;
     }
 
+    public static RequestEscursione toRequestEscursioneByEscursioneMapper(Escursione escursione){
+        RequestEscursione requestEscursione = new RequestEscursione();
+        requestEscursione.setNomeEscursione(escursione.getNomeEscursione().toString());
+        requestEscursione.setDescrizione(escursione.getDescrizione());
+        requestEscursione.setPostiDisponibili(escursione.getPostiDisponibili().toString());
+        requestEscursione.setDataPubblicazione(escursione.getData().toString());
+
+        return requestEscursione;
+    }
+    public  static RequestModificaUtente toRequestModificaUtenteByUtenteMapper(Utente utente){
+        RequestModificaUtente requestModificaUtente = new RequestModificaUtente();
+        requestModificaUtente.setNome(utente.getNome());
+        requestModificaUtente.setEmail(utente.getEmail());
+        requestModificaUtente.setPassword(utente.getPassword());
+        requestModificaUtente.setCognome(utente.getCognome());
+
+        return requestModificaUtente;
+
+    }
+
+    public static RequestLezione toRequestLezioneByLezioneMapper(Lezione lezione){
+        RequestLezione requestLezione = new RequestLezione();
+        requestLezione.setTipologiaLezione(lezione.getTipologiaLezione().toString());
+        requestLezione.setDuration(lezione.getData().toString());
+        requestLezione.setStartLesson(lezione.getData().toString());
+
+        return requestLezione;
+    }
+
+    public static RequestAccettaRiffiuta toRequestAcettaRifiutaByLezioneMapper(Lezione lezione){
+        RequestAccettaRiffiuta requestAccettaRiffiuta = new RequestAccettaRiffiuta();
+        requestAccettaRiffiuta.setIdLezione(lezione.getId().toString());
+        requestAccettaRiffiuta.setAccetta("true");
+        requestAccettaRiffiuta.setCommento("lezione accettata");
+
+        return requestAccettaRiffiuta;
+    }
+
 }

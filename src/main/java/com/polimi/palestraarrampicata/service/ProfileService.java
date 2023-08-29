@@ -113,7 +113,6 @@ public class ProfileService {
 
         Utente utenteLoggato = Utils.getUserFromHeader(request,utenteRepo ,jwtUtils );
         String oldPassword = utenteLoggato.getPassword();
-        boolean usernameModificato = false;
 
         String nome = requestModifica.getNome();
         String cognome = requestModifica.getCognome();
@@ -132,7 +131,7 @@ public class ProfileService {
             utenteLoggato.setEmail(email);
         if(password != null && !password.equals(oldPassword)) {
             utenteLoggato.setPassword(password);
-            usernameModificato = true;
+
         }
         if (fotoProfilo != null){
             byte[] fotoProfiloByte = Base64.getDecoder().decode(fotoProfilo.getBytes(StandardCharsets.UTF_8));

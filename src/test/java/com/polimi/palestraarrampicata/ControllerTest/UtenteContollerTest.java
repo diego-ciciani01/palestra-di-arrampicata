@@ -56,13 +56,17 @@ public class UtenteContollerTest {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity()).build();
     }
 
-
+    /**
+     * Caso di test per verificare il recupero di tutte le lezioni accettate da parte di un utente autenticato (HTTP 200 OK).
+     * Il test simula una richiesta GET all'endpoint /api/v1/user/getAll/inviti/accettati.
+     * Il mock utenteService è configurato per restituire una lista di lezioni accettate come risultato della chiamata.
+     * Il test si aspetta uno stato di risposta HTTP 200 OK e controlla che il corpo della risposta contenga i dati delle lezioni attesi.
+     */
     @Test
     @WithMockUser
     public void givenUtente_getAllLessonsAccettate_ReturnOk() throws Exception{
         List<ResponseLezione> responseLezioni = Stub.getLezioniResponseStubAccettate();
         given(utenteService.getListInvitiLezioneAccettate(any())).willReturn(responseLezioni);
-
         mvc.perform(MockMvcRequestBuilders.get("/api/v1/user/getAll/inviti/accettati"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id", is("1")))
@@ -76,6 +80,13 @@ public class UtenteContollerTest {
                 .andExpect(jsonPath("$[2].statoLezione", is(true)));
     }
 
+    /**
+     * Caso di test per verificare la gestione di una richiesta di recupero di tutti gli inviti lezione accettati
+     * da parte di un utente autenticato con uno stato di errore Bad Request (HTTP 400 Bad Request).
+     * Il test simula una richiesta GET all'endpoint /api/v1/user/getAll/inviti/accettati.
+     * Il mock utenteService è configurato per lanciare un'eccezione EntityNotFoundException.
+     * Il test si aspetta uno stato di risposta HTTP 400 Bad Request.
+     */
     @Test
     @WithMockUser
     public  void  givenUtente_getAllInvitiAccettati_badRequest() throws  Exception{
@@ -84,6 +95,13 @@ public class UtenteContollerTest {
                 .andExpect(status().isBadRequest());
 
     }
+
+    /**
+     * Caso di test per verificare il recupero di tutti gli inviti lezione di un utente autenticato con stato di successo (HTTP 200 OK).
+     * Il test simula una richiesta GET all'endpoint /api/v1/user/getAllInviti.
+     * Il mock utenteService è configurato per restituire una lista di inviti lezione simulati.
+     * Il test verifica che la risposta HTTP abbia uno stato 200 OK e controlla i dettagli degli inviti nella risposta JSON.
+     */
     @Test
     @WithMockUser
     public void givenUtente_getAllInviti_returnOk() throws Exception {
@@ -102,7 +120,12 @@ public class UtenteContollerTest {
                 .andExpect(jsonPath("$[2].statoLezione", is(false)));
 
     }
-
+    /**
+     * Caso di test per verificare il recupero di tutti gli inviti lezione di un utente autenticato con stato di fallimento (HTTP 400 Bad Request).
+     * Il test simula una richiesta GET all'endpoint /api/v1/user/getAllInviti.
+     * Il mock utenteService è configurato per sollevare un'eccezione di tipo EntityNotFoundException.
+     * Il test verifica che la risposta HTTP abbia uno stato 400 Bad Request.
+     */
     @Test
     @WithMockUser
     public  void  givenUtente_getAllInviti_badRequest() throws  Exception{
@@ -133,9 +156,10 @@ public class UtenteContollerTest {
         String requestCommento_asString = new ObjectMapper().writeValueAsString(requestCommento);
         given(utenteService.creaCommento(any(), any())).willReturn(commento);
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/user/commenta/istruttore")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(commento.getId())));
+                .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestCommento_asString))
+                        .andExpect(jsonPath("$.id", is(commento.getId().toString())))
+                        .andExpect(status().isOk());
     }
 
     /**
@@ -322,20 +346,16 @@ public class UtenteContollerTest {
         mvc.perform(MockMvcRequestBuilders.delete("/api/v1/user/delete/email/" + utente.getEmail()))
                 .andExpect(status().isForbidden());
     }
-
     /**
-     * Questo metodo testa la chiamata al endpoint getListCommentifromUtenteToIstruttore di un utente
-     * il metodo vuole ritornare una lista di commenti fatti dall'utente loggato verso un istruttore
-     *
-     *
-     * @throws Exception
+     * Caso di test per verificare il recupero di tutti i commenti da un utente a un istruttore autenticato con successo (HTTP 200 OK).
+     * Il test simula una richiesta GET all'endpoint /api/v1/user/commenti/getAllByIstruttore/{istruttoreId}.
+     * Il mock utenteService è configurato per restituire una lista di commenti di risposta specificata.
+     * Il test verifica che la risposta HTTP abbia uno stato 200 OK e controlla alcuni attributi chiave dei commenti restituiti.
      */
     @Test
     @WithMockUser()
     public void getListCommentiFromUtenteToIstruttore_ReturnOk() throws Exception{
-        Utente utente = Stub.getUtenteStub();
         Utente istruttore = Stub.getInstructorStub();
-        //List<Commento> listaCommenti = Stub.getListCommenti();
         List<ResponseCommento> responseCommenti = Response.toCommentoListResponseByCommentoListMapper(Stub.getListCommenti());
         given(utenteService.getListCommentifromUtenteToIstruttore(any(), any())).willReturn(responseCommenti);
         mvc.perform(MockMvcRequestBuilders.get("/api/v1/user/commenti/getAllByIstruttore/" + istruttore.getId()))
@@ -349,6 +369,14 @@ public class UtenteContollerTest {
 
     }
 
+    /**
+     * Caso di test per verificare la gestione di una richiesta errata (HTTP 400 Bad Request) quando si tenta di ottenere
+     * la lista di commenti da un utente a un istruttore e l'istruttore non viene trovato.
+     * Il test simula una richiesta GET all'endpoint /api/v1/user/commenti/getAllByIstruttore/{istruttoreId}
+     * con un istruttore non valido.
+     * Il mock utenteService è configurato per lanciare un'eccezione EntityNotFoundException.
+     * Il test verifica che la risposta HTTP abbia uno stato 400 Bad Request.
+     */
     @Test
     @WithMockUser()
     public void getListCommentiFromUtenteToIstruttore_BadRequest() throws Exception{

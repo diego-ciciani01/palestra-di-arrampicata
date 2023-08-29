@@ -4,17 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.polimi.palestraarrampicata.Stub;
 import com.polimi.palestraarrampicata.dto.request.RequestCorso;
 import com.polimi.palestraarrampicata.dto.request.RequestIscriviti;
-import com.polimi.palestraarrampicata.dto.request.RequestNoleggiaAttrezzatura;
 import com.polimi.palestraarrampicata.dto.response.ResponseCorso;
 import com.polimi.palestraarrampicata.mapping.Request;
 import com.polimi.palestraarrampicata.model.Corso;
 import com.polimi.palestraarrampicata.model.Utente;
 import com.polimi.palestraarrampicata.service.CorsoService;
 import jakarta.persistence.EntityNotFoundException;
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Nested;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +22,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 
@@ -55,7 +50,15 @@ public class CorsoControllerTest {
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(context).apply(SecurityMockMvcConfigurers.springSecurity()).build();
     }
+    //Usato per mappare gli oggetti come stringhe, in modo da poterli passare nel conenututo dalla richiesta mockata
     ObjectMapper objectMapper = new ObjectMapper();
+
+    /**
+     * Testa il comportamento dell'endpoint per creare un corso quando l'utente ha il ruolo ADMIN.
+     * Verifica che una richiesta POST a /api/v1/corso/crea restituisca uno stato di successo (HTTP 200 OK).
+     * Il mock corsoService è configurato per restituire un oggetto Corso durante la richiesta.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 200 OK.
+     */
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
     public void givenCorso_CreaCorso_ReturnOk() throws Exception{
@@ -69,10 +72,16 @@ public class CorsoControllerTest {
                         .andExpect(status().isOk());
 
     }
-
+    /**
+     * Testa il comportamento dell'endpoint per creare un corso quando l'utente ha il ruolo ADMIN.
+     * Verifica che una richiesta POST a /api/v1/corso/crea restituisca uno stato di errore bad request (HTTP 400).
+     * Il mock corsoService è configurato per lanciare un'eccezione EntityNotFoundException durante la richiesta,
+     * simboleggiando una situazione in cui l'entità dell'istruttore associato al corso non è trovata.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 400 Bad Request.
+     */
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
-    @Nested
+
     public void givenCorso_CreaCorso_ReturnBadRequest() throws Exception{
         Corso corso = Stub.getCorsoStub();
         RequestCorso requestCorso = Request.toRequestCorsoByCorsoMapper(corso);
@@ -87,7 +96,12 @@ public class CorsoControllerTest {
 
     }
 
-    //RICORDATI DI FARE ANCHE GLI ALTRI TEST PER CONTROLLARE ADMIN E CC
+    /**
+     * Testa il comportamento dell'endpoint per eliminare un corso quando l'utente ha il ruolo ADMIN.
+     * Verifica che una richiesta DELETE a /api/v1/corso/elimina/{id} restituisca uno stato OK (HTTP 200).
+     * Il mock corsoService è configurato per restituire un oggetto ResponseCorso quando viene chiamato il metodo eliminaCorso.
+     * Viene eseguita la chiamata alla richiesta DELETE e viene verificato che la risposta HTTP abbia uno stato 200 OK.
+     */
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
     public void deleteCorso_ReturnOK() throws Exception{
@@ -98,14 +112,15 @@ public class CorsoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(responseCorsoString))
                 .andExpect(status().isOk());
-
-
     }
-
     /**
-     * In questo metodo testiamo la l'eliminazione del corso andando a richiamare il metodo
-     * @throws Exception
+     * Testa il comportamento dell'endpoint per eliminare un corso quando l'utente ha il ruolo ADMIN,
+     * ma si verifica un'eccezione EntityNotFoundException all'interno del corsoService.
+     * Verifica che una richiesta DELETE a /api/v1/corso/elimina/{id} restituisca uno stato di errore interno del server (HTTP 500 Internal Server Error).
+     * Il mock corsoService è configurato per lanciare un'eccezione EntityNotFoundException durante la richiesta.
+     * Viene eseguita la chiamata alla richiesta DELETE e viene verificato che la risposta HTTP abbia uno stato 500 Internal Server Error.
      */
+
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
     public void deleteCorso_ReturnInternalServerError_EntityNotFound() throws Exception{
@@ -133,6 +148,13 @@ public class CorsoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isForbidden());
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi di un istruttore quando l'utente ha effettuato l'accesso.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll/byInstructor/{id_istruttore} restituisca uno stato di successo (HTTP 200 OK).
+     * Il mock corsoService è configurato per restituire una lista di corsi come risposta.
+     * Viene eseguita la chiamata alla richiesta GET e viene verificato che la risposta HTTP abbia uno stato 200 OK.
+     */
     @Test
     @WithMockUser()
     public void getAll_Corso_ByIstructor_ReturnOk() throws Exception{
@@ -144,9 +166,16 @@ public class CorsoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(responseCorsiString))
                 .andExpect(status().isOk());
-               // .andExpect(jsonPath("$.emailIstruttore", is(istruttore.getEmail())));
+
 
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi di un istruttore quando si verifica un'eccezione EntityNotFoundException.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll/byInstructor/{id_istruttore} restituisca uno stato di errore interno del server (HTTP 500 Internal Server Error).
+     * Il mock corsoService è configurato per lanciare un'eccezione EntityNotFoundException durante la richiesta.
+     * Viene eseguita la chiamata alla richiesta GET e viene verificato che la risposta HTTP abbia uno stato 500 Internal Server Error.
+     */
     @Test
     @WithMockUser()
     public void getAll_Corso_ByIstructor_ReturnInternalServerError_EntityNotFound ()throws Exception{
@@ -157,6 +186,15 @@ public class CorsoControllerTest {
                 .andExpect(status().isInternalServerError());
 
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per iscriversi a un corso con un utente autorizzato.
+     * Verifica che una richiesta POST a /api/v1/corso/iscriviti restituisca uno stato OK (HTTP 200 OK)
+     * e che il corpo della risposta contenga l'ID del corso a cui l'utente si è iscritto.
+     * Il mock corsoService è configurato per restituire un corso durante la richiesta.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 200 OK
+     * e che il corpo della risposta contenga l'ID del corso restituito dal mock.
+     */
     @Test
     @WithMockUser(value = "spring", authorities = {"UTENTE"})
     public void iscriviCorso_ReturnOk() throws Exception{
@@ -172,6 +210,14 @@ public class CorsoControllerTest {
 
 
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per l'iscrizione a un corso quando si verifica un'eccezione EntityNotFoundException.
+     * Verifica che una richiesta POST a /api/v1/corso/iscriviti restituisca uno stato di errore interno del server (HTTP 500 Internal Server Error).
+     * Il mock corsoService è configurato per lanciare un'eccezione EntityNotFoundException durante la richiesta di iscrizione.
+     * Viene preparata una richiesta di iscrizione di esempio e viene configurato il mock per gestire l'eccezione.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 500 Internal Server Error.
+     */
     @Test
     @WithMockUser(value = "spring", authorities = {"UTENTE"})
     public void iscriviCorso_ReturnInternaServerError_EntityNotFound() throws Exception{
@@ -184,6 +230,14 @@ public class CorsoControllerTest {
                         .andExpect(status().isInternalServerError());
 
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per l'iscrizione a un corso quando si verifica un'eccezione EntityNotFoundException.
+     * Verifica che una richiesta POST a /api/v1/corso/iscriviti restituisca uno stato di errore Forbidden (HTTP 403 Forbidden).
+     * Il mock corsoService è configurato per lanciare un'eccezione EntityNotFoundException durante la richiesta di iscrizione.
+     * Viene preparata una richiesta di iscrizione di esempio e viene configurato il mock per gestire l'eccezione.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 403 Forbidden.
+     */
     @Test
     @WithMockUser()
     public void iscriviCorso_ReturnForbidden() throws Exception{

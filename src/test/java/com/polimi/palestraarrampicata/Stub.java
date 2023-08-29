@@ -1,17 +1,14 @@
 package com.polimi.palestraarrampicata;
-
 import com.polimi.palestraarrampicata.dto.request.*;
 import com.polimi.palestraarrampicata.dto.response.*;
 import com.polimi.palestraarrampicata.model.*;
-import com.polimi.palestraarrampicata.service.LezioneService;
 import com.polimi.palestraarrampicata.utils.Utils;
-import org.junit.jupiter.api.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Stub {
-
+        //Stub è una classe per utilizzare i dati mokati, usati per effettuare i test
     public static Escursione getEscursioneStub(){
         Escursione escursione = new Escursione();
         escursione.setData(Utils.formatterDataTime("12/03/2023 12:30"));
@@ -21,7 +18,29 @@ public class Stub {
         escursione.setOrganizzatore(getInstructorStub());
         escursione.setDescrizione("il giorno 12/03/2023 ci troviamo sotto la funivia del massicio del rosa ....");
         escursione.setUtentiPartecipanti(getListUtentiStub());
+        escursione.setPostiDisponibili(33);
         return escursione;
+    }
+
+    public static RequestLogin getLoginStub(){
+        RequestLogin requestLogin = new RequestLogin();
+        requestLogin.setPassword("password");
+        requestLogin.setEmail("prova@gmail.com");
+
+        return requestLogin;
+    }
+
+    public static RequestRegistrazione getRequestRegistrazione(){
+        RequestRegistrazione requestRegistrazione = new RequestRegistrazione();
+        requestRegistrazione.setNome("luca");
+        requestRegistrazione.setCognome("compagnucci");
+        requestRegistrazione.setPassword("password");
+        requestRegistrazione.setEmail("luca@gmail.com");
+        requestRegistrazione.setDataNascita("28/06/2001");
+        requestRegistrazione.setRuolo("UTENTE");
+
+        return requestRegistrazione;
+
     }
 
     public static List<ResponseLezione> getLezioneResponseStub(){
@@ -97,10 +116,27 @@ public class Stub {
         return commentiList;
 
     }
+    public static List<ResponseEscursione> getResponseEscursione(){
+        List<ResponseEscursione> responseEscursione = new ArrayList<>();
+        for(int i=0;i<4;i++){
+            responseEscursione.add(
+                    ResponseEscursione.builder()
+                            .id(i)
+                            .postiDisponibili(4)
+                            .descrizione("portatevi :....")
+                            .data(Utils.formatterDataTime("15/05/2023 12:30"))
+                            .emailOrganizzatore(getInstructorStub().getEmail())
+                            .nomeEscursione("escursione"+i)
+                            .build());
+        }
+        return responseEscursione;
+
+    }
 
 
     public static Commento getCommentiFiglioStub(){
         Commento commento = new Commento();
+        commento.setId(1);
         commento.setTesto("Grazie mille per il feedback, se vuoi puoi lasciare una valutazione");
         commento.setDataInserimento(Utils.formatterDataTime("15/05/2023 12:00"));
         commento.setIstruttoreCommentato(getInstructorStub());
@@ -154,6 +190,7 @@ public class Stub {
         utente.setEmail("diego.ciciani@gmail.com");
         utente.setRuolo(Ruolo.UTENTE);
         utente.setPassword("password");
+        utente.setDataDiNascita(Utils.formatterData("28/06/2001"));
         return utente;
 
     }
@@ -197,6 +234,18 @@ public class Stub {
         noleggio.setAttrezzoNoleggiato(getAttrezzoStub());
         noleggio.setNoleggiatore(getInstructorStub());
         return noleggio;
+    }
+    public static List<Noleggio> getListNoleggioStub(){
+        ArrayList<Noleggio> noleggiList = new ArrayList<>();
+        for(Integer i=0;i<4;i++){
+            noleggiList.add(
+                    Noleggio.builder()
+                            .id(i)
+                            .dataNoleggio(Utils.formatterDataTime("15/03/2024 12:20"))
+                            .dataFineNoleggio(Utils.formatterDataTime("16/03/2024 12:20"))
+                            .build());
+        }
+        return noleggiList;
     }
 
     public static Attrezzatura getAttrezzoStub(){
@@ -244,6 +293,21 @@ public class Stub {
         }
         return  attrezzi;
     }
+    public static List<ResponseAttrezzatura> getListResponseAttrezzatura(){
+        List<ResponseAttrezzatura> getResponseAttrezzaturaList = new ArrayList<>();
+        for(Integer i = 0; i<4; i++){
+            getResponseAttrezzaturaList.add(
+                    ResponseAttrezzatura.builder()
+                            .id(i.toString())
+                            .nomeAttrezzo("imbrago")
+                            .disponibilita(true)
+                            .nomePalestraAppartenente(getPalestraStub().getNome())
+                            .build());
+        }
+
+        return getResponseAttrezzaturaList;
+    }
+
      public  static RequestAttrezzatura getRequestAttrezzaturaStub(){
         RequestAttrezzatura requestAttrezzatura = new RequestAttrezzatura();
         requestAttrezzatura.setIdPalestraPossessore(getPalestraStub().getId().toString());
@@ -314,6 +378,18 @@ public class Stub {
         return responseAttrezzaturaList;
     }
 
+    public  static Lezione getLezione(){
+        Lezione lezione = new Lezione();
+        lezione.setTipologiaLezione(TipologiaLezione.Introduzione);
+        lezione.setStatoLezione(true);
+        lezione.setData(Utils.formatterDataTime("12/12/2023 12:30"));
+        lezione.setDurata(3f);
+        lezione.setId(0);
+        lezione.setIstruttore(getInstructorStub());
+
+        return lezione;
+    }
+
     public static List<ResponsePalestra> getListResponsePalestraStub(){
         List<ResponsePalestra> responsePalestraList = new ArrayList<>();
         for(Integer i =0; i<4; i++){
@@ -335,6 +411,20 @@ public class Stub {
         requestNoleggiaAttrezzatura.setDataFineNoleggio("17/11/2023");
 
         return requestNoleggiaAttrezzatura;
+    }
+
+    public static List <ResponseNoleggio> getNoleggiaAttrezzatura(){
+        List<ResponseNoleggio> responseNoleggiaAttrezzaturaList = new ArrayList<>();
+        for(int i=0;i<3;i++){
+            responseNoleggiaAttrezzaturaList.add(
+                     ResponseNoleggio.builder()
+                             .id("1")
+                             .dataInizioNoleggio("12/10/2023")
+                             .dataFineNoleggio("15/10/2023")
+                             .build()
+            );
+        }
+        return responseNoleggiaAttrezzaturaList;
     }
 
 }

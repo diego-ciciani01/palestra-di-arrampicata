@@ -5,12 +5,14 @@ import com.polimi.palestraarrampicata.model.Taglia;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @AllArgsConstructor
+@RequiredArgsConstructor
 @Builder
 public class ResponseAttrezzatura {
     private  String id;

@@ -46,11 +46,10 @@ public class EscursioneController {
     /**
      * questo EndPoint è accessibile a tutti e ritorna tutte l'escursioni disponibili, con lo status
      * Disponibile = True
-     * @param httpServletRequest
      * @return
      */
     @GetMapping("/getAll")
-    public ResponseEntity<?> getAll(HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> getAll(){
         try {
             return ResponseEntity.ok(escursioneService.getListEscursioniDisponibili());
         }catch (EntityNotFoundException ex){
@@ -62,13 +61,12 @@ public class EscursioneController {
      * In questo EndPoint L'utente è in grado si iscriversi ad una escursione organizzata da un istruttore
      * passando nell'url Id dell'escursione
      * @param idEscursione
-     * @param result
      * @param httpServletRequest
      * @return
      */
     @PreAuthorize("hasAuthority('UTENTE')")
     @PostMapping("/iscriviti/{id_escursione}")
-    public ResponseEntity<?> iscriviti(@PathVariable("id_escursione") Integer idEscursione, BindingResult result, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> iscriviti(@PathVariable("id_escursione") Integer idEscursione, HttpServletRequest httpServletRequest){
         try{
             return ResponseEntity.ok(escursioneService.partecipaEscursione(idEscursione, httpServletRequest));
         }catch (EntityNotFoundException ex){
@@ -81,7 +79,7 @@ public class EscursioneController {
      * @param idEscursione
      * @return
      */
-    @PostMapping("/elimina/{id_escursione}")
+    @DeleteMapping("/elimina/{id_escursione}")
     @PreAuthorize("hasAuthority('ISTRUTTORE')")
     public ResponseEntity<?> eliminaEscursione(@PathVariable("id_escursione") Integer idEscursione){
         try{

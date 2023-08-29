@@ -21,7 +21,7 @@ import javax.validation.Valid;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/profilo")
+@RequestMapping("/api/v1/profilo")
 public class ProfiloContoller {
     @Autowired
     private ProfileService profileService;
@@ -38,7 +38,7 @@ public class ProfiloContoller {
             return ResponseEntity.ok(profileService.login(requestLogin));
         } catch (LoginFallito e) {
             return new ResponseEntity<>(e.getMessage() , HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
+        } catch (EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -59,7 +59,7 @@ public class ProfiloContoller {
         catch (RegistrazioneFallita e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        catch (Exception e){
+        catch (EntityNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

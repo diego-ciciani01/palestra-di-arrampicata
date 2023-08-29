@@ -1,14 +1,14 @@
 package com.polimi.palestraarrampicata.dto.request;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Data
 @RequiredArgsConstructor
+@AllArgsConstructor
+@Builder
 @ToString
 public class RequestAccettaRiffiuta {
 

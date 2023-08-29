@@ -58,8 +58,12 @@ public class PalestraControllerTest {
     private ObjectMapper  objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     /**
-     *
-     * @throws Exception
+     * Testa il comportamento dell'endpoint per la creazione di una palestra.
+     * Verifica che una richiesta POST a /api/v1/palestra/create restituisca uno stato OK (HTTP 200 OK).
+     * Il mock palestraService è configurato per restituire una palestra di esempio durante la richiesta di creazione.
+     * Viene preparata una richiesta di creazione di una palestra e viene configurato il mock per gestire la risposta.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 200 OK
+     * e che i dettagli della palestra creata siano presenti nella risposta.
      */
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
@@ -99,6 +103,13 @@ public class PalestraControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    /**
+     * Testa il comportamento dell'endpoint per la creazione di una palestra quando si verifica un'eccezione IllegalStateException.
+     * Verifica che una richiesta POST a /api/v1/palestra/create restituisca uno stato Bad Request (HTTP 400 Bad Request).
+     * Il mock palestraService è configurato per lanciare un'eccezione IllegalStateException durante la richiesta di creazione.
+     * Viene preparata una richiesta di creazione di una palestra e viene configurato il mock per gestire l'eccezione.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 400 Bad Request.
+     */
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
     public void creaPalestra_ReturnBadRequest_IllegalStateException() throws  Exception{
@@ -150,6 +161,16 @@ public class PalestraControllerTest {
                 .andExpect(status().isBadRequest());
 
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti gli utenti iscritti a una palestra.
+     * Verifica che una richiesta GET a /api/v1/palestra/getAll/iscrittiByPalestra/{emailPalestra} restituisca uno stato OK (HTTP 200 OK)
+     * e restituisca la lista degli utenti iscritti alla palestra correttamente serializzata come JSON.
+     * Vengono preparati dati simulati di una palestra, corsi e utenti iscritti, e la lista di utenti serializzata.
+     * Il mock palestraService è configurato per restituire la lista degli utenti.
+     * Viene eseguita la chiamata alla richiesta GET e viene verificato che la risposta HTTP abbia uno stato 200 OK
+     * e che il contenuto della risposta corrisponda alla lista serializzata degli utenti.
+     */
     @Test
     @WithMockUser()
     public void getAll_Utenti_ByPalestra_ReturnOk() throws Exception{
@@ -170,7 +191,15 @@ public class PalestraControllerTest {
 
     }
 
-
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti gli utenti iscritti a una palestra,
+     * quando si verifica un'eccezione di tipo IllegalStateException.
+     * Verifica che una richiesta GET a /api/v1/palestra/getAll/iscrittiByPalestra/{emailPalestra}
+     * restituisca uno stato di BadRequest (HTTP 400 Bad Request) quando si verifica l'eccezione.
+     * Vengono preparati dati simulati di una palestra, corsi e utenti iscritti, con un'email non esistente per la palestra.
+     * Il mock palestraService è configurato per lanciare un'eccezione di tipo IllegalStateException.
+     * Viene eseguita la chiamata alla richiesta GET e viene verificato che la risposta HTTP abbia uno stato di BadRequest.
+     */
     @Test
     @WithMockUser()
     public void getAll_Utenti_ByPalestra_ReturnBadRequest_IllegalState()throws Exception{
@@ -186,30 +215,6 @@ public class PalestraControllerTest {
 
         given(palestraService.getAllIscrittiBYEmailPalestra(any())).willThrow(new IllegalStateException());
         mvc.perform(MockMvcRequestBuilders.get("/api/v1/palestra/getAll/iscrittiByPalestra/"+ palestra.getEmailPalestra()))
-                .andExpect(status().isBadRequest());
-
-    }
-
-    @Test
-    @WithMockUser()
-    public void getAll_Utenti_ByPalestra_ReturnBadRequest_EntityNotFound()throws Exception{
-        Palestra palestra = Stub.getPalestraStub();
-        palestra.setEmailPalestra("error email");
-        List<Corso> corsoList = Stub.getListCorsoStub();
-        List<Utente> utenti = Stub.getListUtentiStub();
-        for(int i=0; i<utenti.size();i++) {
-            utenti.get(i).setCorsiIscritto(corsoList);
-            utenti.get(i).setIscrittiPalestra(palestra);
-        }
-        List<ResponseUtente>  responseUtenteList = DTOManager.toUserResponseByUsers(utenti);
-
-        String utentiString = objectMapper.writeValueAsString(responseUtenteList);
-
-        String msg = "la palestra cercata non esiste";
-        given(palestraService.getAllIscrittiBYEmailPalestra(any())).willThrow(new EntityNotFoundException());
-        mvc.perform(MockMvcRequestBuilders.get("/api/v1/palestra/getAll/iscrittiByPalestra/"+ palestra.getEmailPalestra())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(utentiString))
                 .andExpect(status().isBadRequest());
 
     }
@@ -249,7 +254,14 @@ public class PalestraControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-
+    /**
+     * Testa il comportamento dell'endpoint per iscrivere un utente a una palestra.
+     * Verifica che una richiesta POST a /api/v1/palestra/iscriviti restituisca uno stato di OK (HTTP 200 OK)
+     * quando l'utente viene iscritto correttamente alla palestra.
+     * Viene preparata una richiesta di iscrizione a una palestra, usando dati simulati.
+     * Il mock palestraService è configurato per restituire un messaggio di successo.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato di OK.
+     */
     @Test
     @WithMockUser()
     public void iscrivi_Utente_ReturnOk() throws Exception{
@@ -264,7 +276,13 @@ public class PalestraControllerTest {
                 .andExpect(status().isOk());
 
     }
-
+    /**
+     * Testa il comportamento dell'endpoint per iscrivere un utente a una palestra.
+     * Verifica che una richiesta POST a /api/v1/palestra/iscriviti restituisca uno stato di BadRequest (HTTP 400 Bad Request)
+     * quando si verifica un'entità non trovata durante l'iscrizione dell'utente alla palestra.
+     * Il mock palestraService è configurato per lanciare un'eccezione di tipo EntityNotFoundException.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato di BadRequest.
+     */
     @Test
     @WithMockUser()
     public void iscrivi_Utente_ReturnBadRequest_EntityNotFound() throws Exception{

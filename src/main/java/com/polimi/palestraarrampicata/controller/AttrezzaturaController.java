@@ -94,7 +94,7 @@ public class AttrezzaturaController {
     @GetMapping("getAll/noleggi")
     public ResponseEntity<?> getAllNoleggi(){
         try{
-            return ResponseEntity.ok(DTOManager.listAttrezzatureWithNoleggio(attrezzaturaService.getAllNoleggi()));
+            return  ResponseEntity.ok(DTOManager.listAttrezzatureWithNoleggio(attrezzaturaService.getAllNoleggi()));
         }catch(EntityNotFoundException | IllegalStateException | DateTimeException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }

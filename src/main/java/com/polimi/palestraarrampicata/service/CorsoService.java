@@ -28,12 +28,26 @@ public class CorsoService {
     private final UtenteRepo utenteRepo;
     private final JwtUtils jwtUtils;
 
+
+    /**
+     * Crea un nuovo corso nel sistema.
+     *
+     * @param requestCorso Oggetto contenente i dettagli del corso da creare.
+     * @return L'oggetto Corso appena creato.
+     * @throws EntityNotFoundException Se l'istruttore specificato non esiste o se non viene trovato un utente istruttore.
+     * @throws CreazioneAttivitaFallita Se la difficoltà specificata non è valida.
+     * @throws DateTimeException Se ci sono conflitti di date tra i corsi dello stesso istruttore.
+     */
     public Corso creaCorso(RequestCorso requestCorso) throws EntityNotFoundException {
+        // Converte la data di inizio del corso.
         LocalDate inizioCorso = Utils.formatterData(requestCorso.getDataDiInizio());
+
+        // Trova l'istruttore corrispondente all'email specificata dalla repository utenteRepo.
         Utente istruttore = utenteRepo.findUserByEmailAndRuolo(requestCorso.getEmailIstruttore(), Ruolo.ISTRUTTORE)
                 .orElseThrow(()-> new EntityNotFoundException("L'istruttore inserito non esiste"));
+
         // prendi tutti i corsi che fa l'istruttore, se ha già un corso che inizia lo stesso giorno di un'altro
-        // bisogna spostare la data di inizio
+        // bisogna spostare la data di inizio, evitiamo i conflitti con le date
         for(Corso corso: istruttore.getCorsiTenuti()){
             if(corso.getIstruttoreCorso().getEmail().equals(requestCorso.getEmailIstruttore())){
                 if(corso.getDataInizio().equals(requestCorso.getDataDiInizio()))
@@ -43,17 +57,22 @@ public class CorsoService {
 
         Corso corso = new Corso();
         float costoCorso = 0;
+
+        // Converte la stringa del costo in un float.
         try{
             costoCorso = Float.parseFloat(requestCorso.getCosto());
         }catch (NumberFormatException ex){
             System.out.println("Invalid float format: " + requestCorso.getCosto());
         }
         try{
+            // Converte la stringa della difficoltà in un enum Difficolta
             Difficolta difficolta = Difficolta.fromString(requestCorso.getDifficolta());
             corso.setDifficolta(difficolta);
         }catch (IllegalArgumentException e) {
             throw new CreazioneAttivitaFallita("La difficoltà inserita non è valida");
         }
+
+        // impostiamo i dati nell'oggetto
         corso.setCosto(costoCorso);
         corso.setIstruttoreCorso(istruttore);
         corso.setSettimaneDiCorso(Integer.parseInt(requestCorso.getNumeroSettimane()));
@@ -66,18 +85,30 @@ public class CorsoService {
         }else{
             istruttore.getCorsiIscritto().add(corso);
         }
+
+        // Salvataggio del corso e dell'istruttore.
         corsoRepo.save(corso);
         utenteRepo.save(istruttore);
 
         return corso;
     }
 
+    /**
+     * Elimina un corso dal sistema.
+     *
+     * @param idCorso ID del corso da eliminare.
+     * @return Oggetto ResponseCorso contenente i dettagli del corso eliminato.
+     * @throws EntityNotFoundException Se il corso da eliminare non viene trovato.
+     */
     public ResponseCorso eliminaCorso(Integer idCorso)throws EntityNotFoundException{
+        // Trova il corso da eliminare tramite l'ID specificato dalla repository corsoRepo.
          Corso corsoDaEliminare =  corsoRepo.findById(idCorso)
                  .orElseThrow(()-> new IllegalStateException("il corso da eliminare non esiste"));
 
+         // Elimina il corso dalla repository corsoRepo.
          corsoRepo.delete(corsoDaEliminare);
 
+        // Crea un oggetto ResponseCorso con i dettagli del corso eliminato e lo restituisce.
          return ResponseCorso.builder()
                     .id(corsoDaEliminare.getId().toString())
                     .nome(corsoDaEliminare.getNome())
@@ -86,10 +117,18 @@ public class CorsoService {
 
     }
 
+    /**
+     * Ottiene una lista di tutti i corsi disponibili nel sistema.
+     *
+     * @return Lista di oggetti ResponseCorso contenenti i dettagli dei corsi.
+     * @throws EntityNotFoundException Se non vengono trovati corsi nel sistema.
+     */
     public List<ResponseCorso> getListCorso() throws EntityNotFoundException{
+        // Ottiene tutti i corsi dalla repository corsoRepo.
         Iterable<Corso> corsi = corsoRepo.findAll();
         List<ResponseCorso> corsiList = new ArrayList<>();
 
+        // Converte ciascun corso in un oggetto ResponseCorso e lo aggiunge alla lista.
         for(Corso c: corsi){
             corsiList.add(ResponseCorso.builder()
                             .id(c.getId().toString())
@@ -99,15 +138,28 @@ public class CorsoService {
                             .emailIstruttore(c.getIstruttoreCorso().getEmail())
                             .build());
         }
+        // Restituisce la lista dei corsi.
         return corsiList;
     }
 
+    /**
+     * Ottiene una lista dei corsi tenuti da un istruttore specifico, che non sono ancora iniziati.
+     *
+     * @param idInstructor ID dell'istruttore di cui ottenere i corsi.
+     * @return Lista di oggetti ResponseCorso contenenti i dettagli dei corsi dell'istruttore.
+     * @throws EntityNotFoundException Se l'istruttore specificato non viene trovato.
+     */
     public List<ResponseCorso> getLessionByInstructor(Integer idInstructor) {
+        // Trova l'istruttore corrispondente all'ID specificato dalla repository utenteRepo.
         Utente istruttore = utenteRepo.findById(idInstructor).orElseThrow(() -> new EntityNotFoundException("Maestro non trovato"));
+
+        // Ottiene tutti i corsi tenuti dall'istruttore dalla repository corsoRepo.
         List <Corso> corsiIstruttore = corsoRepo.findAllByIstruttoreCorso(istruttore);
         // prende tutti i corsi che non sono ancora iniziati
         List <Corso> corsiAfterNow = corsiIstruttore.stream().filter(cur -> cur.getDataInizio().isAfter(LocalDate.now())).toList();
         List <ResponseCorso> corsoResponse = new ArrayList<>();
+
+        // Converte ciascun corso nella lista filtrata in un oggetto ResponseCorso e lo aggiunge alla lista.
         corsiAfterNow.forEach(elem -> {
             corsoResponse.add(ResponseCorso.builder()
                             .id(elem.getId().toString())
@@ -117,18 +169,35 @@ public class CorsoService {
                             .numeroSettimane(elem.getSettimaneDiCorso())
                     .build());
         });
+
+        // Restituisce la lista dei corsi dell'istruttore che non sono ancora iniziati.
         return corsoResponse;
     }
 
+    /**
+     * Iscrive un utente a un corso nel sistema.
+     *
+     * @param requestIscriviti Oggetto contenente i dettagli dell'iscrizione al corso.
+     * @param httpServletRequest Oggetto HttpServletRequest per ottenere l'utente dalla richiesta.
+     * @return L'oggetto Corso a cui l'utente si è iscritto.
+     * @throws RicercaFallita Se l'utente non è un utente o se il corso cercato non esiste.
+     */
     public Corso iscrivitiCorso(RequestIscriviti requestIscriviti, HttpServletRequest httpServletRequest) throws EntityNotFoundException{
+        // Ottiene l'utente loggato dalla richiesta HTTP.
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
+
+        // Controlla se l'utente loggato ha il ruolo di UTENTE.
         if(utenteLoggato.getRuolo() != Ruolo.UTENTE)
             throw new RicercaFallita("solo l'utente può iscriversi ad un corso");
 
+        // Trova il corso a cui l'utente vuole iscriversi tramite l'ID specificato dalla repository corsoRepo.
         Corso corso = corsoRepo.findById(requestIscriviti.getId()).orElse(null);
+
+        // Se il corso non viene trovato, solleva un'eccezione.
         if(corso==null)
             throw new RicercaFallita("il corso cercato non esiste");
 
+        // Aggiunge l'utente al corso.
         if(corso.getIscritti().isEmpty()){
             List<Utente> iscritti = new ArrayList<>();
             iscritti.add(utenteLoggato);
@@ -136,7 +205,7 @@ public class CorsoService {
         }else {
             corso.getIscritti().add(utenteLoggato);
         }
-
+        // Aggiunge il corso all'elenco dei corsi a cui l'utente è iscritto
         if(utenteLoggato.getCorsiIscritto().isEmpty()){
             List<Corso> corsi = new ArrayList<>();
             corsi.add(corso);
@@ -145,9 +214,11 @@ public class CorsoService {
             utenteLoggato.getCorsiIscritto().add(corso);
         }
 
+        // Salva le modifiche al corso e all'utente nell'apposita repository
         corsoRepo.save(corso);
         utenteRepo.save(utenteLoggato);
 
+        // Restituisce il corso a cui l'utente si è iscritto.
         return corso;
 
     }

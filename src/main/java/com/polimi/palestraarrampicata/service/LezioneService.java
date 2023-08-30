@@ -34,29 +34,40 @@ public class LezioneService {
     /**
      * con questom metodo l'utente va a creare una lezione, inserendo quale istruttore desidera, lo stato della lezione quando viene creato è sempre in false, deve
      * essere accettata dal maestro
-     * @param request
-     * @param httpServletRequest
-     * @return
-     * @throws EntityNotFoundException
-     * @throws DateTimeException
+     * @param request Richiesta contenente i dettagli della lezione da creare.
+     * @param httpServletRequest La richiesta HTTP corrente.
+     * @return La lezione appena creata.
+     * @throws EntityNotFoundException Se l'istruttore specificato nella richiesta non esiste.
+     * @throws DateTimeException Se la data di inizio lezione è nel passato.
+     * @throws IllegalStateException Se l'istruttore è già occupato nelle date della lezione.
      */
     public Lezione createLesson(RequestLezione request, HttpServletRequest httpServletRequest) throws EntityNotFoundException, DateTimeException{
+        // fortto la data string passata nella richiesta
         LocalDateTime startLesson = Utils.formatterDataTime(request.getStartLesson());
+
+        // Ottiene l'utente loggato dalla richiesta HTTP
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
-        Ruolo ruolo = Ruolo.ISTRUTTORE;
-        Utente istruttore = utenteRepo.findUserByEmailAndRuolo(request.getInstructorEmail(), ruolo)
+
+        // Trova l'istruttore specificato nella richiesta, sellavo una eccezione nel caso di istruttore non trovato
+        Utente istruttore = utenteRepo.findUserByEmailAndRuolo(request.getInstructorEmail(), Ruolo.ISTRUTTORE)
                 .orElseThrow(()->new EntityNotFoundException("L'istruttore non esiste"));
-        //cerchiamo l'istruttore e controlliamo se non è già occupato in quelle date
+
+        // Controlla se l'istruttore è già occupato nelle date della lezione
         List<Lezione> list  = lezioneRepo.findAllByIstruttore(istruttore);
+
         if(!dataIsValid(list, startLesson)) throw  new IllegalStateException("Maestro occupato in queste date");
+
         float durata = 0;
+
         Lezione lezione = new Lezione();
+
+        // qui faccio il cast da string in tipo FLoat della durata
         try{
             durata  = Float.parseFloat(request.getDuration());
         }catch (NumberFormatException e) {
             System.out.println("Invalid float format: " + request.getDuration());
         }
-
+        // Converti la stringa tipologia lezione in un'enumerazione
         try{
             TipologiaLezione tipo = TipologiaLezione.fromString(request.getTipologiaLezione());
             lezione.setTipologiaLezione(tipo);
@@ -68,8 +79,8 @@ public class LezioneService {
         lezione.setDurata(durata);
         lezione.setIstruttore(istruttore);
         lezione.setStatoLezione(false);
-        //lezione.getUtentiInvitati().add(utenteLoggato);
-        //utenteLoggato.getLezioniIscritte().add(lezione);
+
+        // Aggiunta dell'utente loggato agli invitati e dell'invito all'utente loggato
         List<Lezione> inviti = utenteLoggato.getInviti();
         List<Utente> utententiInvitati = lezione.getUtentiInvitati();
         if(inviti == null)
@@ -84,12 +95,13 @@ public class LezioneService {
         utenteLoggato.setInviti(inviti);
         lezione.setUtentiInvitati(utententiInvitati);
 
+        // Salvataggio dell'entità lezione e dell'utente
         lezioneRepo.save(lezione);
         utenteRepo.save(utenteLoggato);
         return lezione;
 
     }
-
+    // metodo di supporto per controllare la validita delle date, in modo di non creare conflitti con le altre lezioni
     public boolean dataIsValid(List<Lezione> list, LocalDateTime inizio){
         for (Lezione elm: list){
             if(inizio.isEqual(elm.getData()))
@@ -98,39 +110,73 @@ public class LezioneService {
         return true;
     }
 
+    /**
+     * Metodo per accettare o rifiutare una richiesta di lezione da parte di un istruttore.
+     * @param request La richiesta di accettazione/rifiuto della lezione.
+     * @param httpServletRequest La richiesta HTTP in corso.
+     * @return L'oggetto Lezione dopo averlo aggiornato.
+     * @throws EntityNotFoundException Se l'istruttore non è trovato o l'ID della lezione non corrisponde a nessuna lezione.
+     */
+
     public Lezione accettaRifiutaLezione(RequestAccettaRiffiuta request, HttpServletRequest httpServletRequest) throws  EntityNotFoundException{
+        // Ottieni l'utente istruttore loggato dalla richiesta HTTP
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
+
+        // Verifica che l'utente sia un istruttor
         if(utenteLoggato.getRuolo() != Ruolo.ISTRUTTORE)
             throw new RicercaFallita("solo l'istruttore può accettare o meno le richieste di lezione");
 
+        // Scorrere le lezioni per trovare quella corrispondente all'ID fornito nella richiesta
         List<Lezione> lezioni = lezioneRepo.findAllByIstruttore(utenteLoggato);
         for(int i=0; i<lezioni.size(); i++){
             if(lezioni.get(i).getId() == Integer.parseInt(request.getIdLezione())) {
                 Lezione lezione = lezioni.get(i);
+
+                // Controlla se la richiesta è per accettare o rifiutare la lezione
                 if(Boolean.valueOf(request.getAccetta())){
+                    // Imposta lo stato della lezione come accettato
                     lezione.setStatoLezione(Boolean.valueOf(request.getAccetta()));
+
                     if(lezione.getUtentiInvitati().isEmpty()){
+
+                        // Se non ci sono utenti invitati, impostare direttamente gli utenti partecipanti
                         List<Utente> utentiInvitati = new ArrayList<>();
                         utentiInvitati = lezione.getUtentiInvitati();
                         lezione.setUtentiPartecipanti(utentiInvitati);
                     }else {
+                        // Aggiungi gli utenti invitati agli utenti partecipanti
                         lezione.getUtentiInvitati().forEach(elem -> lezione.getUtentiPartecipanti().add(elem));
                     }
                 }
+                // Aggiorna il commento associato alla lezione
                 lezione.setCommento(request.getCommento());
+
+                // Salva la lezione aggiornata nel repository
                 lezioneRepo.save(lezione);
+
+                // Restituisci la lezione aggiornata
                 return lezione;
             }
         }
+        // Se non viene trovata una corrispondenza, l'istruttore può accettare solo inviti a lezioni specifiche
         throw new RicercaFallita("l'istruttore può accettare solo gli inviti che gli sono assegnati");
 
 
     }
 
+    /**
+     * Recupera una lista di oggetti ResponseLezione contenenti informazioni sulle lezioni.
+     * @return Una lista di oggetti ResponseLezione.
+     * @throws EntityNotFoundException Se non vengono trovate lezioni.
+     */
     public List<ResponseLezione> getListLession() throws EntityNotFoundException{
+        // Recupera tutte le lezioni dal repository
         Iterable<Lezione> lezioni = lezioneRepo.findAll();
+
+        // Lista in cui verranno memorizzate le informazioni sulle lezioni
         List<ResponseLezione> lessonList = new ArrayList<>();
 
+        // Scorrere tutte le lezioni e creare oggetti ResponseLezione corrispondenti
         for(Lezione l : lezioni){
                     lessonList.add(ResponseLezione.builder()
                             .id(l.getId().toString())
@@ -144,11 +190,27 @@ public class LezioneService {
         return lessonList;
     }
 
+    /**
+     * Recupera una lista di oggetti ResponseLezione che corrispondono alle lezioni
+     * tenute da un istruttore specifico.
+     * @param idInstructor L'ID dell'istruttore di cui si vogliono ottenere le lezioni.
+     * @return Una lista di oggetti ResponseLezione corrispondenti alle lezioni dell'istruttore.
+     * @throws EntityNotFoundException Se l'istruttore non viene trovato.
+     */
     public List<ResponseLezione> getLessionByInstructor(Integer idInstructor) {
+        // Recupera l'istruttore dal repository degli utenti
         Utente istruttore = utenteRepo.findById(idInstructor).orElseThrow(() -> new EntityNotFoundException("Maestro non trovato"));
+
+        // Recupera tutte le lezioni tenute dall'istruttore
         List <Lezione> lezioniInstructor = lezioneRepo.findAllByIstruttore(istruttore);
+
+        // Filtra le lezioni che avvengono dopo l'orario attuale
         List <Lezione> lessionAfterNow = lezioniInstructor.stream().filter(cur -> cur.getData().isAfter(LocalDateTime.now())).toList();
+
+        // Lista in cui verranno memorizzate le informazioni sulle lezioni
         List <ResponseLezione> lessonsResponse = new ArrayList<>();
+
+        // Creazione degli oggetti ResponseLezione basati sulle lezioni filtrate
         lessionAfterNow.forEach(elem -> {
             lessonsResponse.add(ResponseLezione.builder()
                             .id(elem.getId().toString())

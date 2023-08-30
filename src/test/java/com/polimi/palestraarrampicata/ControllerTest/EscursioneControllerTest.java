@@ -62,7 +62,7 @@ public class EscursioneControllerTest {
         Escursione escursione  = Stub.getEscursioneStub();
         RequestEscursione requestEscursione = Request.toRequestEscursioneByEscursioneMapper(escursione);
         String requestEscursione_string = new ObjectMapper().writeValueAsString(requestEscursione);
-        given(escursioneService.createEscursione(any(),any())).willReturn(escursione);
+        given(escursioneService.createEscursione(any())).willReturn(escursione);
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/escursione/crea")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestEscursione_string))
@@ -81,7 +81,7 @@ public class EscursioneControllerTest {
         Escursione escursione  = Stub.getEscursioneStub();
         RequestEscursione requestEscursione = Request.toRequestEscursioneByEscursioneMapper(escursione);
         String requestEscursione_string = new ObjectMapper().writeValueAsString(requestEscursione);
-        given(escursioneService.createEscursione(any(),any())).willThrow(new IllegalStateException());
+        given(escursioneService.createEscursione(any())).willThrow(new IllegalStateException());
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/escursione/crea")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestEscursione_string))
@@ -99,7 +99,7 @@ public class EscursioneControllerTest {
         Escursione escursione  = Stub.getEscursioneStub();
         RequestEscursione requestEscursione = Request.toRequestEscursioneByEscursioneMapper(escursione);
         String requestEscursione_string = new ObjectMapper().writeValueAsString(requestEscursione);
-        given(escursioneService.createEscursione(any(),any())).willThrow(new EntityNotFoundException());
+        given(escursioneService.createEscursione(any())).willThrow(new EntityNotFoundException());
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/escursione/crea")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestEscursione_string))
@@ -117,7 +117,7 @@ public class EscursioneControllerTest {
         Escursione escursione  = Stub.getEscursioneStub();
         RequestEscursione requestEscursione = Request.toRequestEscursioneByEscursioneMapper(escursione);
         String requestEscursione_string = new ObjectMapper().writeValueAsString(requestEscursione);
-        given(escursioneService.createEscursione(any(),any())).willThrow(new DateTimeException("formato data inseito errato"));
+        given(escursioneService.createEscursione(any())).willThrow(new DateTimeException("formato data inseito errato"));
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/escursione/crea")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestEscursione_string))

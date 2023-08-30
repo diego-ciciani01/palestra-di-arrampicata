@@ -28,6 +28,15 @@ public class LezioneController {
     @Autowired
     private LezioneService lezioneService;
 
+    /**
+     * Crea una nuova lezione.
+     *
+     * @param requestLezione Oggetto RequestLezione contenente i dettagli della lezione da creare.
+     * @param request Oggetto HttpServletRequest per ottenere informazioni sulla richiesta.
+     * @return ResponseEntity contenente l'oggetto ResponseLezione rappresentante la lezione creata.
+     * Restituisce una risposta con codice HTTP 200 (OK) e i dettagli della lezione appena creata.
+     * nel caso di eccezioni sollevate il metodo ritorna una BadRequest 400
+     */
     @PostMapping(value = "/crea", consumes = "application/json")
     public ResponseEntity<?> createLesson(@Valid @RequestBody RequestLezione requestLezione, HttpServletRequest request) {
         try{
@@ -37,6 +46,13 @@ public class LezioneController {
         }
     }
 
+    /**
+     * Ottiene la lista di tutte le lezioni disponibili.
+     *
+     * @return ResponseEntity contenente la lista di oggetti ResponseLezione rappresentanti le lezioni disponibili.
+     * Restituisce una risposta con codice HTTP 200 (OK) la lista della lezioni trovate.
+     * nel caso di eccezioni sollevate il metodo ritorna una Internal Server Error 500
+     */
     @GetMapping("/getAll")
     public ResponseEntity<?> getLessons(){
         try{
@@ -46,6 +62,16 @@ public class LezioneController {
         }
 
     }
+
+    /**
+     * Gestisce l'accettazione o il rifiuto di un invito a una lezione da parte di un istruttore.
+     *
+     * @param requestAccettaRifiuta Oggetto RequestAccettaRifiuta contenente i dettagli dell'invito.
+     * @param request Oggetto HttpServletRequest per accedere alle informazioni sulla richiesta HTTP.
+     * @return ResponseEntity contenente l'oggetto ResponseIstruttore rappresentante l'istruttore dopo l'accettazione/rifiuto dell'invito.
+     * Restituisce una risposta con codice HTTP 200 (OK) e l'oggetto della lezione accettata.
+     * nel caso di eccezioni sollevate il metodo ritorna una Bad Request 400.
+     */
 
     @PostMapping(value = "/invito/accetta", consumes = "application/json")
     @PreAuthorize("hasAuthority('ISTRUTTORE')")
@@ -57,7 +83,14 @@ public class LezioneController {
 
         }
     }
-
+    /**
+     * Ottiene tutte le lezioni associate a un istruttore specificato.
+     *
+     * @param idInstructor L'ID dell'istruttore di cui si vogliono ottenere le lezioni.
+     * @return ResponseEntity contenente una lista di ResponseLezione rappresentanti le lezioni associate all'istruttore.
+     * Restituisce una risposta con codice HTTP 200 (OK) e la lista delle lezioni dell'id dell'istruttore passato nella chiamata.
+     * nel caso di eccezioni sollevate il metodo ritorna una Internal Server Error 500.
+     */
     @GetMapping("/getAll/byInstructor/{id_instructor}")
     public ResponseEntity<?> getLessonsByInstructor(@PathVariable("id_instructor") Integer idInstructor){
         try{

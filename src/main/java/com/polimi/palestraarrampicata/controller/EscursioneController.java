@@ -28,16 +28,19 @@ public class EscursioneController {
     /**
      * In questo EndPoint è possibile creare una escursione
      * solamente l'istruttore può creare un uscita
-     * @param RequestEscursione
-     * @param result
-     * @param httpServletRequest
-     * @return
+     * @param requestEscursione Oggetto contenente i dettagli dell'escursione da creare.
+     * @return ResponseEntity contenente l'oggetto ResponseEscursione dell'escursione creata.
+     * @throws IllegalStateException Se si verifica uno stato illegale durante la creazione dell'escursione.
+     * @throws EntityNotFoundException Se l'entità necessaria per la creazione dell'escursione non viene trovata.
+     * @throws DateTimeException Se si verifica un problema con le date nell'escursione.
+     * Restituisce una risposta con codice HTTP 200 (OK) e i dettagli dell'escursione appena creata.
+     * nel caso di eccezioni sollevate il metodo ritorna una BadRequest 400
      */
     @PostMapping("/crea")
     @PreAuthorize("hasAuthority('ISTRUTTORE')")
-    public ResponseEntity<?> creaEscursione(@Valid @RequestBody RequestEscursione RequestEscursione, BindingResult result, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> creaEscursione(@Valid @RequestBody RequestEscursione requestEscursione){
         try{
-            return ResponseEntity.ok(DTOManager.toEscursioneResponseByEscursione(escursioneService.createEscursione(RequestEscursione,httpServletRequest)));
+            return ResponseEntity.ok(DTOManager.toEscursioneResponseByEscursione(escursioneService.createEscursione(requestEscursione)));
         }catch (IllegalStateException | EntityNotFoundException | DateTimeException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
@@ -46,7 +49,10 @@ public class EscursioneController {
     /**
      * questo EndPoint è accessibile a tutti e ritorna tutte l'escursioni disponibili, con lo status
      * Disponibile = True
-     * @return
+     * @return ResponseEntity contenente la lista di oggetti Escursione disponibili.
+     * @throws EntityNotFoundException Se non vengono trovate escursioni disponibili.
+     * Restituisce una risposta con codice HTTP 200 (OK) e i dettagli di tutte l'escursioni dell'escursione.
+     * nel caso di eccezioni sollevate il metodo ritorna una Internal Server Errro 500
      */
     @GetMapping("/getAll")
     public ResponseEntity<?> getAll(){
@@ -60,9 +66,12 @@ public class EscursioneController {
     /**
      * In questo EndPoint L'utente è in grado si iscriversi ad una escursione organizzata da un istruttore
      * passando nell'url Id dell'escursione
-     * @param idEscursione
-     * @param httpServletRequest
-     * @return
+     * @param idEscursione ID dell'escursione a cui l'utente vuole iscriversi.
+     * @param httpServletRequest Oggetto HttpServletRequest per ottenere l'utente dalla richiesta.
+     * @return ResponseEntity contenente l'oggetto Escursione dell'escursione a cui l'utente si è iscritto.
+     * @throws EntityNotFoundException Se l'escursione specificata non viene trovata.
+     * Restituisce una risposta con codice HTTP 200 (OK) e l'oggetto dell'escursione a cui ci si è iscritti.
+     * nel caso di eccezioni sollevate il metodo ritorna una Internal Server Error 500
      */
     @PreAuthorize("hasAuthority('UTENTE')")
     @PostMapping("/iscriviti/{id_escursione}")
@@ -76,8 +85,11 @@ public class EscursioneController {
 
     /**
      * In questo EndPoint L'istruttore può eliminare una escursione
-     * @param idEscursione
-     * @return
+     * @param idEscursione ID dell'escursione da eliminare.
+     * @return ResponseEntity contenente l'oggetto ResponseEscursione dell'escursione eliminata.
+     * @throws EntityNotFoundException Se l'escursione specificata non viene trovata.
+     * Restituisce una risposta con codice HTTP 200 (OK) per confermare la corretta eliminazione dell'escursione.
+     * nel caso di eccezioni sollevate il metodo ritorna una Internal Server Error 500
      */
     @DeleteMapping("/elimina/{id_escursione}")
     @PreAuthorize("hasAuthority('ISTRUTTORE')")
@@ -92,10 +104,13 @@ public class EscursioneController {
     /**
      * In questo EndPoint tutti possono cercare tra tutte le Escursioni disponibili organizzate da
      * un istruttore, di cui l'id deve essere passato nell'indirizzo url
-     * @param idIstruttore
-     * @return
+     * @param idIstruttore ID dell'istruttore a cui appartengono le escursioni cercate.
+     * @return ResponseEntity contenente la lista di oggetti Escursione associate all'istruttore.
+     * @throws EntityNotFoundException Se le escursioni associate all'istruttore non vengono trovate.
+     * Restituisce una risposta con codice HTTP 200 (OK) e restituisce la liste di escursioni organizzate
+     * dall'istruttore passato nella chiamata.
+     * nel caso di eccezioni sollevate il metodo ritorna una Internal Server Error 500
      */
-
     @GetMapping("/getAll/byIstruttore/{id_istruttore}")
     public ResponseEntity<?> getEscursioneByIstruttore(@PathVariable("id_istruttore") Integer idIstruttore){
         try{

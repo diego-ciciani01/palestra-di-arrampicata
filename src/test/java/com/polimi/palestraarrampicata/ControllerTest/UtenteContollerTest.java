@@ -389,5 +389,62 @@ public class UtenteContollerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    /**
+     * Test per verificare il comportamento del controller quando viene richiesta la media delle valutazioni di un istruttore.
+     * Deve restituire una risposta OK con il messaggio contenente la media delle valutazioni.
+     * Configura il comportamento del service per restituire il messaggio di media delle valutazioni
+     * Esegue la richiesta mock per ottenere la media delle valutazioni dell'istruttore
+     * @throws Exception Se si verificano eccezioni durante l'esecuzione del test.
+     *
+     */
+    @Test
+    @WithMockUser()
+    public  void getAvg_FromEmailIstruttore_ReturOk() throws Exception{
+        Utente istruttore = Stub.getInstructorStub();
+        String msg = "la media dell'istruttore è di 4.3";
+
+        given(utenteService.getAvgValutazione(any())).willReturn(msg);
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/user/valuta/getAvg/" + istruttore.getEmail())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(istruttore.getEmail()))
+                .andExpect(status().isOk());
+
+    }
+
+    /**
+     * Test per verificare il comportamento del controller quando si richiede la media delle valutazioni di un istruttore,
+     * ma si verifica uno stato di errore a livello di stato interno (IllegalStateException).
+     * Deve restituire uno stato di errore HTTP BadRequest.
+     * @throws Exception Se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser()
+    public  void getAvg_FromEmailIstruttore_ReturnBadRequest_IllegalState() throws Exception{
+        Utente istruttore = Stub.getInstructorStub();
+        given(utenteService.getAvgValutazione(any())).willThrow(new IllegalStateException());
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/user/valuta/getAvg/" + istruttore.getEmail())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(istruttore.getEmail()))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    /**
+     * Test per verificare il comportamento del controller quando si richiede la media delle valutazioni di un istruttore,
+     * ma si verifica uno stato di errore a livello di entità non trovata (EntityNotFoundException).
+     * Deve restituire uno stato di errore HTTP BadRequest.
+     * @throws Exception Se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser()
+    public  void getAvg_FromEmailIstruttore_ReturnBadRequest_EntityNotFound() throws Exception{
+        Utente istruttore = Stub.getInstructorStub();
+        given(utenteService.getAvgValutazione(any())).willThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/user/valuta/getAvg/" + istruttore.getEmail())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(istruttore.getEmail()))
+                .andExpect(status().isBadRequest());
+
+    }
 }
 

@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +28,9 @@ public class JwtUtils {
      */
     private final String SECRET_KEY = "ubxRpXlzAHHvdRmUH/wInqgFBkIJn4Y6Al5jP2rNMEFPT+ghIOLU7rD7KXeEudZ/";
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+
+    @Autowired
+    private JwtBlackListSingleton jwtBlackListSingleton;
 
     /**
      * Estrae l'email dal token, l'email è contenuta nel claims come soggetto
@@ -54,18 +58,6 @@ public class JwtUtils {
      * @param userDetails
      * @return
      */
-/*    public String generateToken(
-            UserDetails userDetails,
-            Date expireToken
-    ) {
-        return Jwts
-                .builder()
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(expireToken)
-                .signWith(SignatureAlgorithm.HS256, getSignKey())
-                .compact();
-    }*/
 
     public String generateToken(
             UserDetails userDetails,
@@ -131,5 +123,12 @@ public class JwtUtils {
         //Nel header il token si trova nella posizione dopo la 7
         String jwt = authHeader.substring(7);
         return exctractUsername(jwt);
+    }
+
+    public boolean blacklistToken(String token) {
+        if (jwtBlackListSingleton.getJwtBlackList().contains(token))
+            return false;
+        jwtBlackListSingleton.addJwtBlackList(token);
+        return true;
     }
 }

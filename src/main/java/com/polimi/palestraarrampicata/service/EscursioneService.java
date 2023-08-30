@@ -7,6 +7,9 @@ import com.polimi.palestraarrampicata.exception.RicercaFallita;
 import com.polimi.palestraarrampicata.model.Escursione;
 import com.polimi.palestraarrampicata.model.Ruolo;
 import com.polimi.palestraarrampicata.model.Utente;
+import com.polimi.palestraarrampicata.observer.ObservableMain;
+import com.polimi.palestraarrampicata.observer.Observer;
+import com.polimi.palestraarrampicata.observer.ObserverEscursione;
 import com.polimi.palestraarrampicata.repository.EscursioniRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
@@ -66,8 +69,17 @@ public class EscursioneService {
      * @throws EntityNotFoundException Se non sono disponibili escursioni nel sistema.
      */
     public List<ResponseEscursione> getListEscursioniDisponibili()throws EntityNotFoundException{
+        // utilizzo del design pattern observer, mi aggiora il db da escursioni ormai passate
+        ObservableMain main = new ObservableMain();
+        Observer obs1 = new ObserverEscursione();
+        Observer obs2 = new ObserverEscursione();
+
+        main.addObserver(obs1);
+        main.addObserver(obs2);
+        main.notyObservers();
+
         // Ottiene la lista di tutte le escursioni attive
-        List<Escursione> escursioni = escursioniRepo.findAllByStatoEscursione(true);
+        Iterable<Escursione> escursioni = escursioniRepo.findAll();
 
         // Crea una lista per immagazzinare le risposte delle escursioni
         List<ResponseEscursione> responseEscursione = new ArrayList<>();

@@ -91,4 +91,17 @@ public class Request {
         return requestAccettaRiffiuta;
     }
 
+    public  static RequestModificaEscursione toRequestEscursioneByRequestModificaEscursione(Escursione escursione){
+        RequestModificaEscursione requestModificaEscursione = new RequestModificaEscursione();
+        requestModificaEscursione.setId(escursione.getId().toString());
+        requestModificaEscursione.setData(escursione.getData().toString());
+        requestModificaEscursione.setStatoIscrizione(escursione.getStatoEscursione().toString());
+        requestModificaEscursione.setNomeEscursione(escursione.getNomeEscursione());
+        requestModificaEscursione.setDescrizione(escursione.getDescrizione());
+        requestModificaEscursione.setPostiDisponibili(escursione.getPostiDisponibili().toString());
+
+        return requestModificaEscursione;
+
+    }
+
 }

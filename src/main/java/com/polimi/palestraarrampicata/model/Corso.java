@@ -43,4 +43,7 @@ public class Corso {
     @ManyToMany(mappedBy = "corsiIscritto", fetch = FetchType.LAZY)
     private List<Utente> iscritti;
 
+    @ManyToOne()
+    @JoinColumn(name="corsoPalestra")
+    private Palestra corsoPalestra;
 }

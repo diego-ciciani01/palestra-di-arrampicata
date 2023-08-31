@@ -111,5 +111,23 @@ public class PalestraController {
        }
     }
 
+    /**
+     * Elimina una palestra dato l'indirizzo email della palestra.
+     *
+     * @param email_palestra L'indirizzo email della palestra da eliminare.
+     * @return ResponseEntity con un messaggio di successo se l'eliminazione è avvenuta con successo.
+     * In caso contrario, restituisce un ResponseEntity con uno stato HTTP BadRequest e il messaggio di errore.
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/elimina/{email_palestra}")
+    public ResponseEntity<?> elimaPalestra(@PathVariable("email_palestra") String email_palestra){
+        try {
+            return ResponseEntity.ok(palestraService.eliminaPalestra(email_palestra));
+        }catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 
 }

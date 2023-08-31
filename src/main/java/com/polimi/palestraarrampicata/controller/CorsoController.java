@@ -93,7 +93,6 @@ public class CorsoController {
     /**
      * Iscrive un utente a un corso nel sistema.
      * @param requestIscriviti Oggetto contenente i dettagli dell'iscrizione al corso.
-     * @param result Oggetto BindingResult per la validazione dei dati.
      * @param httpServletRequest Oggetto HttpServletRequest per ottenere l'utente dalla richiesta.
      * @return ResponseEntity contenente la risposta con i dettagli dell'iscrizione al corso.
      * Restituisce una risposta con codice HTTP 200 (OK) e i dettagli dell'iscrizione al corso.
@@ -101,7 +100,7 @@ public class CorsoController {
      */
     @PostMapping(value = "/iscriviti")
     @PreAuthorize("hasAuthority('UTENTE')")
-    public ResponseEntity<?> iscrivitiCorso(@Valid @RequestBody RequestIscriviti requestIscriviti, BindingResult result, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> iscrivitiCorso(@Valid @RequestBody RequestIscriviti requestIscriviti, HttpServletRequest httpServletRequest){
         try{
             return ResponseEntity.ok(corsoService.iscrivitiCorso(requestIscriviti, httpServletRequest));
         }catch (EntityNotFoundException ex){

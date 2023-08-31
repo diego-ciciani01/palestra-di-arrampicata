@@ -170,7 +170,7 @@ public class PalestraService {
      */
     public List<Utente> getAllIscrittiBYEmailPalestra(String emailPalestra){
         // Trova la palestra corrispondente all'indirizzo email fornito, se non trovato solleva una EntityNotFound Exception
-        Palestra palestraCercata = palestraRepo.findByEmailPalestra(emailPalestra) .orElseThrow(() ->new EntityNotFoundException("la palestra cercata non esiste"));;
+        Palestra palestraCercata = palestraRepo.findByEmailPalestra(emailPalestra).orElseThrow(() ->new EntityNotFoundException("la palestra cercata non esiste"));;
 
         // Crea una lista per gli utenti iscritti
         List<Utente> utentiIscritti = new ArrayList<>();
@@ -179,5 +179,18 @@ public class PalestraService {
         palestraCercata.getIscrittiPalestra().forEach(utente -> utentiIscritti.add(utente));
 
         return utentiIscritti;
+    }
+    /**
+     * Elimina una palestra dato l'indirizzo email della palestra.
+     * @param emailPalestra L'indirizzo email della palestra da eliminare.
+     * @return Messaggio di conferma dell'eliminazione avvenuta con successo.
+     * @throws EntityNotFoundException Se la palestra con l'indirizzo email fornito non esiste.
+     */
+    public String eliminaPalestra(String emailPalestra){
+        //cerco la palestra in base all'email passata nella richiesta, se non trovo nulla sollevo un'eccezione
+        Palestra palestra = palestraRepo.findByEmailPalestra(emailPalestra).orElseThrow(() ->new EntityNotFoundException("la palestra cercata non esiste"));
+        palestraRepo.delete(palestra);
+
+        return "la palestra è stata eliminata correttamente";
     }
 }

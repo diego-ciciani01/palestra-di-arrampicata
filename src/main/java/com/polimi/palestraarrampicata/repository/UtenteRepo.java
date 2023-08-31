@@ -1,9 +1,6 @@
 package com.polimi.palestraarrampicata.repository;
 
-import com.polimi.palestraarrampicata.model.Corso;
-import com.polimi.palestraarrampicata.model.Lezione;
-import com.polimi.palestraarrampicata.model.Ruolo;
-import com.polimi.palestraarrampicata.model.Utente;
+import com.polimi.palestraarrampicata.model.*;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +19,6 @@ public interface UtenteRepo extends CrudRepository<Utente, Integer> {
 
     List<Corso> findCorsiTenutiByEmail(String email);
 
-
+    Optional<Utente> findByIscrittiPalestra(Palestra palestra);
 }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.polimi.palestraarrampicata.Stub;
 import com.polimi.palestraarrampicata.dto.request.RequestEscursione;
+import com.polimi.palestraarrampicata.dto.request.RequestModificaEscursione;
 import com.polimi.palestraarrampicata.dto.response.ResponseEscursione;
 import com.polimi.palestraarrampicata.mapping.Request;
 import com.polimi.palestraarrampicata.model.Escursione;
@@ -308,6 +309,37 @@ public class EscursioneControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(id_str))
                 .andExpect(status().isInternalServerError());
+    }
+    @Test
+    @WithMockUser()
+    public void modificaEscursione_ReturnOk() throws  Exception{
+        Escursione escursione = Stub.getEscursioneStub();
+        RequestModificaEscursione requestModificaEscursione = Request.toRequestEscursioneByRequestModificaEscursione(escursione);
+        String msg = "modifica fatta correttamente";
+        String requestModificaEscursione_str = new ObjectMapper().writeValueAsString(requestModificaEscursione);
+        given(escursioneService.modificaEscursione(any(), any())).willReturn(msg);
+        mvc.perform(MockMvcRequestBuilders.patch("/api/v1/escursione/modifica")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestModificaEscursione_str))
+                .andExpect(status().isOk());
+
+
+    }
+
+    @Test
+    @WithMockUser()
+    public void modificaEscursione_ReturnInternalServerError_EntyNotFound() throws  Exception{
+        Escursione escursione = Stub.getEscursioneStub();
+        RequestModificaEscursione requestModificaEscursione = Request.toRequestEscursioneByRequestModificaEscursione(escursione);
+        String msg = "modifica fatta correttamente";
+        String requestModificaEscursione_str = new ObjectMapper().writeValueAsString(requestModificaEscursione);
+        given(escursioneService.modificaEscursione(any(), any())).willThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.patch("/api/v1/escursione/modifica")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestModificaEscursione_str))
+                        .andExpect(status().isInternalServerError());
+
+
     }
 
 }

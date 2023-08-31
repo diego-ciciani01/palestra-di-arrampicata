@@ -1,15 +1,17 @@
 package com.polimi.palestraarrampicata.service;
 
 import com.polimi.palestraarrampicata.dto.request.RequestEscursione;
+import com.polimi.palestraarrampicata.dto.request.RequestModificaEscursione;
 import com.polimi.palestraarrampicata.dto.response.ResponseEscursione;
 import com.polimi.palestraarrampicata.exception.CreazioneEscursioneFallita;
+import com.polimi.palestraarrampicata.exception.ModificaFallita;
 import com.polimi.palestraarrampicata.exception.RicercaFallita;
 import com.polimi.palestraarrampicata.model.Escursione;
 import com.polimi.palestraarrampicata.model.Ruolo;
 import com.polimi.palestraarrampicata.model.Utente;
-import com.polimi.palestraarrampicata.observer.ObservableMain;
+import com.polimi.palestraarrampicata.observer.EscursioneObservable;
 import com.polimi.palestraarrampicata.observer.Observer;
-import com.polimi.palestraarrampicata.observer.ObserverEscursione;
+import com.polimi.palestraarrampicata.observer.ObserverUser;
 import com.polimi.palestraarrampicata.repository.EscursioniRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
@@ -29,6 +31,8 @@ public class EscursioneService {
     private  final UtenteRepo utenteRepo;
     private final JwtUtils jwtUtils;
     private final EscursioniRepo escursioniRepo;
+    private  final EscursioneObservable main;
+    private  ObserverUser observerUser;
 
     /**
      * Crea una nuova escursione nel sistema.
@@ -59,7 +63,12 @@ public class EscursioneService {
         escursione.setOrganizzatore(istruttore);
         escursione.setPostiDisponibili(Integer.parseInt(requestEscursione.getPostiDisponibili()));
 
+        // creo un osservatore con dentro un'istruttore
+        observerUser = new ObserverUser(istruttore);
+        main.addObserver(observerUser);
+
         return escursione;
+
     }
 
     /**
@@ -69,17 +78,8 @@ public class EscursioneService {
      * @throws EntityNotFoundException Se non sono disponibili escursioni nel sistema.
      */
     public List<ResponseEscursione> getListEscursioniDisponibili()throws EntityNotFoundException{
-        // utilizzo del design pattern observer, mi aggiora il db da escursioni ormai passate
-        ObservableMain main = new ObservableMain();
-        Observer obs1 = new ObserverEscursione();
-        Observer obs2 = new ObserverEscursione();
-
-        main.addObserver(obs1);
-        main.addObserver(obs2);
-        main.notyObservers();
-
         // Ottiene la lista di tutte le escursioni attive
-        Iterable<Escursione> escursioni = escursioniRepo.findAll();
+        List<Escursione> escursioni = escursioniRepo.findAllByStatoEscursione(true);
 
         // Crea una lista per immagazzinare le risposte delle escursioni
         List<ResponseEscursione> responseEscursione = new ArrayList<>();
@@ -133,6 +133,9 @@ public class EscursioneService {
 
         // Salva le modifiche all'utente nel repository
         utenteRepo.save(utenteLoggato);
+
+        observerUser = new ObserverUser(utenteLoggato);
+        main.addObserver(observerUser);
 
         // Restituisce l'oggetto Escursione a cui l'utente si è iscritto
         return escursione;
@@ -193,6 +196,47 @@ public class EscursioneService {
                             .build());
         });
         return responseEscursione;
+    }
+
+    public String modificaEscursione(RequestModificaEscursione requestModificaEscursione, HttpServletRequest httpServletRequest){
+        Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
+        Escursione escursione = escursioniRepo.findById( Integer.parseInt(requestModificaEscursione.getId())).orElse(null);
+
+        if(escursione == null)
+            throw new RicercaFallita("l'escursione inserita non esiste ");
+
+        if(!escursione.getOrganizzatore().equals(utenteLoggato))
+            throw new ModificaFallita("soltato l'isturttore che ha organizzato l'escuesione può apportare modific he");
+
+        String nome = requestModificaEscursione.getNomeEscursione();
+        Integer numeroPartecipanti = Integer.parseInt(requestModificaEscursione.getPostiDisponibili());
+        LocalDateTime dataEscursione = Utils.formatterDataTime(requestModificaEscursione.getData());
+        String descrizione = requestModificaEscursione.getDescrizione();
+        Boolean statoIscrzione = Boolean.valueOf(requestModificaEscursione.getStatoIscrizione());
+
+        if(requestModificaEscursione.getNomeEscursione() != null)
+            escursione.setNomeEscursione(nome);
+        if(requestModificaEscursione.getPostiDisponibili() !=null)
+            escursione.setPostiDisponibili(numeroPartecipanti);
+        if(requestModificaEscursione.getData() != null)
+            escursione.setData(dataEscursione);
+        if(requestModificaEscursione.getDescrizione() != null)
+            escursione.setDescrizione(descrizione);
+        if(requestModificaEscursione.getStatoIscrizione() != null)
+            escursione.setStatoEscursione(statoIscrzione);
+
+        escursioniRepo.save(escursione);
+
+        // verifico che gli osservatori siano stati anotificati
+        for(Observer o: main.getObserverList()){
+            o.notify();
+        }
+
+        return "escursione modificata correttamente";
+
+
+
+
     }
 
 }

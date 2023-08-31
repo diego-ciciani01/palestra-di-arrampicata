@@ -3,6 +3,7 @@ package com.polimi.palestraarrampicata.controller;
 import com.polimi.palestraarrampicata.dto.DTOManager;
 import com.polimi.palestraarrampicata.dto.request.RequestAttrezzatura;
 import com.polimi.palestraarrampicata.dto.request.RequestEscursione;
+import com.polimi.palestraarrampicata.dto.request.RequestModificaEscursione;
 import com.polimi.palestraarrampicata.model.Escursione;
 import com.polimi.palestraarrampicata.service.EscursioneService;
 import jakarta.persistence.EntityNotFoundException;
@@ -115,6 +116,14 @@ public class EscursioneController {
     public ResponseEntity<?> getEscursioneByIstruttore(@PathVariable("id_istruttore") Integer idIstruttore){
         try{
             return ResponseEntity.ok(escursioneService.getListEscursioniByIstruttore(idIstruttore));
+        }catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @PatchMapping("/modifica")
+    public ResponseEntity<?> modificaEscursione(@Valid @RequestBody RequestModificaEscursione requestModificaEscursione, HttpServletRequest httpServletRequest){
+        try{
+            return ResponseEntity.ok(escursioneService.modificaEscursione(requestModificaEscursione, httpServletRequest));
         }catch (EntityNotFoundException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -4,9 +4,11 @@ import com.polimi.palestraarrampicata.dto.request.RequestCorso;
 import com.polimi.palestraarrampicata.dto.request.RequestIscriviti;
 import com.polimi.palestraarrampicata.dto.response.ResponseCorso;
 import com.polimi.palestraarrampicata.exception.CreazioneAttivitaFallita;
+import com.polimi.palestraarrampicata.exception.RegistrazioneFallita;
 import com.polimi.palestraarrampicata.exception.RicercaFallita;
 import com.polimi.palestraarrampicata.model.*;
 import com.polimi.palestraarrampicata.repository.CorsoRepo;
+import com.polimi.palestraarrampicata.repository.PalestraRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
 import com.polimi.palestraarrampicata.utils.Utils;
@@ -26,6 +28,7 @@ import java.util.List;
 public class CorsoService {
     private final CorsoRepo corsoRepo;
     private final UtenteRepo utenteRepo;
+    private final PalestraRepo palestraRepo;
     private final JwtUtils jwtUtils;
 
 
@@ -45,6 +48,11 @@ public class CorsoService {
         // Trova l'istruttore corrispondente all'email specificata dalla repository utenteRepo.
         Utente istruttore = utenteRepo.findUserByEmailAndRuolo(requestCorso.getEmailIstruttore(), Ruolo.ISTRUTTORE)
                 .orElseThrow(()-> new EntityNotFoundException("L'istruttore inserito non esiste"));
+
+        // cerco la palestra che corrisponde alla email passata nella request
+        Palestra palestra = palestraRepo.findByEmailPalestra(requestCorso.getEmailPalestraCorso())
+                .orElseThrow(() -> new EntityNotFoundException("la palestra cerca non esiste"));
+
 
         // prendi tutti i corsi che fa l'istruttore, se ha già un corso che inizia lo stesso giorno di un'altro
         // bisogna spostare la data di inizio, evitiamo i conflitti con le date
@@ -75,6 +83,7 @@ public class CorsoService {
         // impostiamo i dati nell'oggetto
         corso.setCosto(costoCorso);
         corso.setIstruttoreCorso(istruttore);
+        corso.setCorsoPalestra(palestra);
         corso.setSettimaneDiCorso(Integer.parseInt(requestCorso.getNumeroSettimane()));
         corso.setNome(requestCorso.getNomeCorso());
         corso.setDataInizio(inizioCorso);
@@ -86,9 +95,18 @@ public class CorsoService {
             istruttore.getCorsiIscritto().add(corso);
         }
 
+        if(palestra.getCorsiPalestra().isEmpty()){
+            List<Corso> corsiPalestra = new ArrayList<>();
+            corsiPalestra.add(corso);
+            palestra.setCorsiPalestra(corsiPalestra);
+        }else {
+            palestra.getCorsiPalestra().add(corso);
+        }
+
         // Salvataggio del corso e dell'istruttore.
         corsoRepo.save(corso);
         utenteRepo.save(istruttore);
+        palestraRepo.save(palestra);
 
         return corso;
     }
@@ -192,6 +210,10 @@ public class CorsoService {
 
         // Trova il corso a cui l'utente vuole iscriversi tramite l'ID specificato dalla repository corsoRepo.
         Corso corso = corsoRepo.findById(requestIscriviti.getId()).orElse(null);
+
+        // controllo se l'utnte è iscritto nella stessa palestra dove viene tenuto il corso, in casso cotrario sollevo un'eccezione
+        if(!corso.getCorsoPalestra().getIscrittiPalestra().contains(utenteLoggato))
+            throw new RegistrazioneFallita("l'utente non è registrato nella palestra dove si svolge il corso");
 
         // Se il corso non viene trovato, solleva un'eccezione.
         if(corso==null)

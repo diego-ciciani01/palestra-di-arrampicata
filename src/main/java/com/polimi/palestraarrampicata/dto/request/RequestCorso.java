@@ -25,6 +25,11 @@ public class RequestCorso {
     @Pattern(regexp = Utils.REGEX_EMAIL, message = Utils.ERROR_EMAIL)
     private String emailIstruttore;
 
+    @NotNull
+    @NotEmpty
+    @Pattern(regexp = Utils.REGEX_EMAIL, message = Utils.ERROR_EMAIL)
+    private String emailPalestraCorso;
+
     @NotBlank(message = "il corso deve avere un numero di settimane")
     private String numeroSettimane;
 
@@ -36,5 +41,7 @@ public class RequestCorso {
     @NotEmpty
     @Pattern(regexp = Utils.LOCALDATE, message = Utils.ERROR_LOCALDATE)
     private String dataDiInizio;
+
+
 
 }

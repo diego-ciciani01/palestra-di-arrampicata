@@ -41,16 +41,18 @@ public class Palestra {
     @Size(min = 5, max = 5, message = Utils.ERROR_CAP)
     private String cap;
 
+
     @NotNull
     @NotEmpty
     @Pattern(regexp = Utils.REGEX_EMAIL, message = Utils.ERROR_EMAIL)
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String emailPalestra;
 
     @NotNull
     @NotEmpty
     @Column(name = "citta")
     private String citta;
+
 
     @NotNull
     @NotEmpty
@@ -63,6 +65,8 @@ public class Palestra {
     @OneToMany(mappedBy = "attrezziPalestra", fetch = FetchType.LAZY )
     private List<Attrezzatura> attrezatura;
 
+    @OneToMany(mappedBy = "corsoPalestra", fetch = FetchType.LAZY)
+    private List<Corso> corsiPalestra;
 
     public Palestra(String cap, String citta, String telefono, String indirizzo, String nomePalestra, String emailPalestra) {
         this.cap = cap;

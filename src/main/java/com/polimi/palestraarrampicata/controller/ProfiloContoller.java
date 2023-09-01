@@ -22,7 +22,7 @@ import javax.validation.Valid;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/v1/profilo")
+@RequestMapping("/profilo")
 public class ProfiloContoller {
     @Autowired
     private ProfileService profileService;

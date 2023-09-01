@@ -11,6 +11,10 @@ import com.polimi.palestraarrampicata.repository.CorsoRepo;
 import com.polimi.palestraarrampicata.repository.PalestraRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
+import com.polimi.palestraarrampicata.strategy.ContextListaCorsi;
+import com.polimi.palestraarrampicata.strategy.ListaCorsi;
+import com.polimi.palestraarrampicata.strategy.ListaCorsiIstruttore;
+import com.polimi.palestraarrampicata.strategy.ListaCorsiPerDifficolta;
 import com.polimi.palestraarrampicata.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -146,6 +150,7 @@ public class CorsoService {
         Iterable<Corso> corsi = corsoRepo.findAll();
         List<ResponseCorso> corsiList = new ArrayList<>();
 
+
         // Converte ciascun corso in un oggetto ResponseCorso e lo aggiunge alla lista.
         for(Corso c: corsi){
             corsiList.add(ResponseCorso.builder()
@@ -171,14 +176,15 @@ public class CorsoService {
         // Trova l'istruttore corrispondente all'ID specificato dalla repository utenteRepo.
         Utente istruttore = utenteRepo.findById(idInstructor).orElseThrow(() -> new EntityNotFoundException("Maestro non trovato"));
 
-        // Ottiene tutti i corsi tenuti dall'istruttore dalla repository corsoRepo.
-        List <Corso> corsiIstruttore = corsoRepo.findAllByIstruttoreCorso(istruttore);
-        // prende tutti i corsi che non sono ancora iniziati
-        List <Corso> corsiAfterNow = corsiIstruttore.stream().filter(cur -> cur.getDataInizio().isAfter(LocalDate.now())).toList();
+        //utilizzo del desing pattern strategy, utilizzato per effettuare una ricerca per istruttore, mostrando solamente i corsi che non sono
+        // ancora passati
+        ContextListaCorsi corsistruttore = new ContextListaCorsi();
+        corsistruttore.eseguiStrategiaListaCorso(new ListaCorsiIstruttore());
+        List<Corso> corsi =  corsistruttore.eseguiRicerca(istruttore,corsoRepo);
         List <ResponseCorso> corsoResponse = new ArrayList<>();
 
         // Converte ciascun corso nella lista filtrata in un oggetto ResponseCorso e lo aggiunge alla lista.
-        corsiAfterNow.forEach(elem -> {
+        corsi.forEach(elem -> {
             corsoResponse.add(ResponseCorso.builder()
                             .id(elem.getId().toString())
                             .dataInizio(elem.getDataInizio())
@@ -191,6 +197,38 @@ public class CorsoService {
         // Restituisce la lista dei corsi dell'istruttore che non sono ancora iniziati.
         return corsoResponse;
     }
+    /**
+     * Restituisce una lista di corsi in base alla difficoltà specificata.
+     *
+     * @param difficolta La difficoltà dei corsi da cercare.
+     * @return Una lista di corsi che corrispondono alla difficoltà specificata.
+     */
+    public List<ResponseCorso> getCorsiByDifficolta(String difficolta){
+        // Creazione di un contesto per l'uso della strategia
+        ContextListaCorsi corsistruttore = new ContextListaCorsi();
+
+        // Esecuzione della strategia per ottenere la lista di corsi per difficoltà
+        corsistruttore.eseguiStrategiaListaCorso(new ListaCorsiPerDifficolta());
+
+        // Esecuzione della ricerca dei corsi con la difficoltà specificata
+        List<Corso> corsi = corsistruttore.eseguiRicerca(corsoRepo, difficolta);
+
+        List <ResponseCorso> corsoResponse = new ArrayList<>();
+
+        // Trasformazione dei risultati della ricerca in oggetti ResponseCorso
+        corsi.forEach(elem -> {
+            corsoResponse.add(ResponseCorso.builder()
+                    .id(elem.getId().toString())
+                    .dataInizio(elem.getDataInizio())
+                    .emailIstruttore(elem.getIstruttoreCorso().getEmail())
+                    .nome(elem.getNome())
+                    .numeroSettimane(elem.getSettimaneDiCorso())
+                    .build());
+        });
+
+        return corsoResponse;
+    }
+
 
     /**
      * Iscrive un utente a un corso nel sistema.

@@ -89,6 +89,22 @@ public class CorsoController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * Restituisce una risposta contenente una lista di corsi in base alla difficoltà specificata.
+     *
+     * @param difficolta La difficoltà dei corsi da cercare.
+     * @return Una ResponseEntity contenente la lista di corsi che corrispondono alla difficoltà specificata.
+     * Gestisce l'eccezione EntityNotFoundException se si verifica durante l'operazione
+     */
+    @GetMapping("/getAll/byDifficolta/{difficolta}")
+    public ResponseEntity<?> getLessonsByDifficolta(@PathVariable("difficolta") String difficolta){
+        try{
+            return ResponseEntity.ok(corsoService.getCorsiByDifficolta(difficolta));
+        }catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
     /**
      * Iscrive un utente a un corso nel sistema.

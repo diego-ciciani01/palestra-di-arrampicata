@@ -111,6 +111,7 @@ public class PalestraController {
        }
     }
 
+
     /**
      * Elimina una palestra dato l'indirizzo email della palestra.
      *
@@ -128,6 +129,7 @@ public class PalestraController {
         }
 
     }
+
 
 
 }

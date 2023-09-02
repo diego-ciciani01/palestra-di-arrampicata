@@ -128,7 +128,7 @@ public class ProfiloContoller {
      * Restituisce una risposta con codice HTTP 200 (OK).
      * Nel caso di eccezioni sollevate il metodo ritorna InternalServerError (500) e BadRequest (400)
      */
-    @GetMapping(value = "logout")
+    @GetMapping(value = "/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
             // Esegue il logout dell'utente

@@ -11,10 +11,7 @@ import com.polimi.palestraarrampicata.repository.CorsoRepo;
 import com.polimi.palestraarrampicata.repository.PalestraRepo;
 import com.polimi.palestraarrampicata.repository.UtenteRepo;
 import com.polimi.palestraarrampicata.security.JwtUtils;
-import com.polimi.palestraarrampicata.strategy.ContextListaCorsi;
-import com.polimi.palestraarrampicata.strategy.ListaCorsi;
-import com.polimi.palestraarrampicata.strategy.ListaCorsiIstruttore;
-import com.polimi.palestraarrampicata.strategy.ListaCorsiPerDifficolta;
+import com.polimi.palestraarrampicata.strategy.*;
 import com.polimi.palestraarrampicata.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -163,6 +160,37 @@ public class CorsoService {
         }
         // Restituisce la lista dei corsi.
         return corsiList;
+    }
+
+    /**
+     * Ottiene la lista di corsi visibili per l'utente autenticato.
+     *
+     * @param httpServletRequest La richiesta HTTP effettuata.
+     * @return Una lista di corsi visibili per l'utente.
+     * @throws EntityNotFoundException Se si verifica un errore durante la ricerca dei corsi.
+     */
+    public List<ResponseCorso> getAllCorsiVisibiliUtente(HttpServletRequest httpServletRequest) throws EntityNotFoundException{
+        // Ottiene l'utente loggato dalla richiesta HTTP.
+        Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
+
+        // Crea un contesto per la ricerca dei corsi visibili all'utente per l'utilizzo del pattern
+        ContextListaCorsi corsiVisibili = new ContextListaCorsi();
+        // Esegue la ricerca dei corsi visibili per l'utente.
+        corsiVisibili.eseguiStrategiaListaCorso(new ListaCorsiPalestraIscritto());
+        List<Corso> corsi = corsiVisibili.eseguiRicerca(utenteLoggato, corsoRepo);
+        List<ResponseCorso> corsiResponse  = new ArrayList<>();
+
+        // Converte la lista di corsi in una lista di risposte (ResponseCorso).
+        corsi.forEach(elem -> {
+            corsiResponse.add(ResponseCorso.builder()
+                    .id(elem.getId().toString())
+                    .dataInizio(elem.getDataInizio())
+                    .emailIstruttore(elem.getIstruttoreCorso().getEmail())
+                    .nome(elem.getNome())
+                    .numeroSettimane(elem.getSettimaneDiCorso())
+                    .build());
+        });
+        return  corsiResponse;
     }
 
     /**

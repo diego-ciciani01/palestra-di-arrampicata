@@ -65,10 +65,25 @@ public class CorsoController {
      * Restituisce una risposta con codice HTTP 200 (OK) e la lista dei corsi.
      * Creare una risposta con un codice HTTP 500 (Internal Server Error) e un messaggio di errore.
      */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/getAll")
-    public ResponseEntity<?> getLessons(){
+    public ResponseEntity<?> getAllCorsi(){
         try{
             return ResponseEntity.ok(corsoService.getListCorso());
+        }catch (EntityNotFoundException ex){
+            return new ResponseEntity<>("non ci sono lezioni disponibili", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    /**
+     * Restituisce una risposta contenente la lista di corsi visibili per l'utente autenticato.
+     *
+     * @param httpServletRequest La richiesta HTTP effettuata.
+     * @return Una ResponseEntity contenente la lista di corsi visibili per l'utente.
+     */
+    @GetMapping("getAll/corsiVisibili")
+    public  ResponseEntity<?> getAllCorsiVisibili(HttpServletRequest httpServletRequest){
+        try{
+            return ResponseEntity.ok(corsoService.getAllCorsiVisibiliUtente(httpServletRequest));
         }catch (EntityNotFoundException ex){
             return new ResponseEntity<>("non ci sono lezioni disponibili", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -103,7 +118,6 @@ public class CorsoController {
         }catch (EntityNotFoundException ex){
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     /**

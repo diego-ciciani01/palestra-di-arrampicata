@@ -310,8 +310,13 @@ public class EscursioneControllerTest {
                         .content(id_str))
                 .andExpect(status().isInternalServerError());
     }
+    /**
+     * Testa la modifica di un'escursione restituendo un codice di stato OK.
+     * Solamente l'istruttore è in grado di eseguire questo end point
+     * @throws Exception Se si verifica un errore durante il test.
+     */
     @Test
-    @WithMockUser()
+    @WithMockUser(value = "spring", authorities = {"ISTRUTTORE"})
     public void modificaEscursione_ReturnOk() throws  Exception{
         Escursione escursione = Stub.getEscursioneStub();
         RequestModificaEscursione requestModificaEscursione = Request.toRequestEscursioneByRequestModificaEscursione(escursione);
@@ -326,8 +331,15 @@ public class EscursioneControllerTest {
 
     }
 
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutte le escursioni create da un istruttore quando si verifica un'eccezione EntityNotFoundException.
+     * Verifica che una richiesta GET a /api/v1/escursione/modifica restituisca uno stato di errore interno del server (HTTP 500 Internal Server Error).
+     * Il mock escursioneService è configurato per lanciare un'eccezione EntityNotFoundException durante la richiesta.
+     * Viene eseguita la chiamata alla richiesta GET con l'ID dell'istruttore e viene verificato che la risposta HTTP abbia uno stato 500 Internal Server Error.
+     */
     @Test
-    @WithMockUser()
+    @WithMockUser(value = "spring", authorities = {"ISTRUTTORE"})
     public void modificaEscursione_ReturnInternalServerError_EntyNotFound() throws  Exception{
         Escursione escursione = Stub.getEscursioneStub();
         RequestModificaEscursione requestModificaEscursione = Request.toRequestEscursioneByRequestModificaEscursione(escursione);
@@ -341,5 +353,29 @@ public class EscursioneControllerTest {
 
 
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutte le escursioni create da un istruttore quando si verifica un'eccezione EntityNotFoundException.
+     * Verifica che una richiesta GET a /api/v1/escursione/modifica restituisca uno stato di errore interno del server (HTTP 500 Internal Server Error).
+     * Il mock escursioneService è configurato per lanciare un'eccezione EntityNotFoundException durante la richiesta.
+     * Viene eseguita la chiamata alla richiesta GET con l'ID dell'istruttore e viene verificato che la risposta HTTP abbia uno stato 500 Internal Server Error.
+     */
+    @Test
+    @WithMockUser()
+    public void modificaEscursione_ReturnFobidden_EntyNotFound() throws  Exception{
+        Escursione escursione = Stub.getEscursioneStub();
+        RequestModificaEscursione requestModificaEscursione = Request.toRequestEscursioneByRequestModificaEscursione(escursione);
+        String msg = "modifica fatta correttamente";
+        String requestModificaEscursione_str = new ObjectMapper().writeValueAsString(requestModificaEscursione);
+        given(escursioneService.modificaEscursione(any(), any())).willThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.patch("/api/v1/escursione/modifica")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestModificaEscursione_str))
+                        .andExpect(status().isForbidden());
+
+
+    }
+
+
 
 }

@@ -63,7 +63,7 @@ public class ProfiloControllerTest {
         String jwt = Stub.getJwtStub_User();
         String requestLogin_str = objectMapper.writeValueAsString(requestLogin);
         given(profileService.login(any())).willReturn(jwt);
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/login")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestLogin_str))
                 .andExpect(status().isOk());
@@ -83,7 +83,7 @@ public class ProfiloControllerTest {
         RequestLogin requestLogin = Stub.getLoginStub();
         String requestLogin_str = objectMapper.writeValueAsString(requestLogin);
         given(profileService.login(any())).willThrow(new LoginFallito());
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/login")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestLogin_str))
                 .andExpect(status().isUnauthorized());
@@ -102,7 +102,7 @@ public class ProfiloControllerTest {
         RequestLogin requestLogin = Stub.getLoginStub();
         String requestLogin_str = objectMapper.writeValueAsString(requestLogin);
         given(profileService.login(any())).willThrow(new EntityNotFoundException());
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/login")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestLogin_str))
                         .andExpect(status().isInternalServerError());
@@ -124,7 +124,7 @@ public class ProfiloControllerTest {
         Utente utente = Stub.getUtenteStub();
         String requestRegistrazione_str = objectMapper.writeValueAsString(requestRegistrazione);
         given(profileService.registrazione(any())).willReturn(utente);
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/registrazione")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/registrazione")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestRegistrazione_str))
                 .andExpect(status().isOk());
@@ -147,7 +147,7 @@ public class ProfiloControllerTest {
         utente.setEmail(null);
         String requestRegistrazione_str = objectMapper.writeValueAsString(requestRegistrazione);
         given(profileService.registrazione(any())).willThrow( new RegistrazioneFallita("parametri mancanti"));
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/registrazione")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/registrazione")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestRegistrazione_str))
                 .andExpect(status().isBadRequest());
@@ -167,7 +167,7 @@ public class ProfiloControllerTest {
         RequestRegistrazione requestRegistrazione = Stub.getRequestRegistrazione();
         Utente utente = Stub.getUtenteStub();
         given(profileService.registrazione(any())).willReturn(utente);
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/registrazione")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/registrazione")
                         .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isBadRequest());
     }
@@ -187,7 +187,7 @@ public class ProfiloControllerTest {
         utente.setEmail(null);
         String requestRegistrazione_str = objectMapper.writeValueAsString(requestRegistrazione);
         given(profileService.registrazione(any())).willThrow(new EntityNotFoundException());
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/registrazione")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/registrazione")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestRegistrazione_str))
                         .andExpect(status().isInternalServerError());
@@ -211,7 +211,7 @@ public class ProfiloControllerTest {
         String requestModificaUtente_str = objectMapper.writeValueAsString(requestModificaUtente);
 
         given(profileService.modificaUtente(any(), any())).willReturn(msg);
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/modifica")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/modifica")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestModificaUtente_str))
                 .andExpect(status().isOk());
@@ -234,7 +234,7 @@ public class ProfiloControllerTest {
         String msg = "utente modificato correttamente";
         String requestModificaUtente_str = objectMapper.writeValueAsString(requestModificaUtente);
         given(profileService.modificaUtente(any(), any())).willThrow(new EntityNotFoundException());
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/modifica")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/modifica")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestModificaUtente_str))
                 .andExpect(status().isInternalServerError());
@@ -255,7 +255,7 @@ public class ProfiloControllerTest {
         String msg = "utente modificato correttamente";
         String requestModificaUtente_str = objectMapper.writeValueAsString(requestModificaUtente);
         given(profileService.modificaUtente(any(),any())).willReturn(msg);
-        mvc.perform(MockMvcRequestBuilders.post("/api/v1/profilo/modifica")
+        mvc.perform(MockMvcRequestBuilders.post("/profilo/modifica")
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isBadRequest());
     }

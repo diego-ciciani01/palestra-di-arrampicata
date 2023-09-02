@@ -120,7 +120,17 @@ public class EscursioneController {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Modifica un'escursione esistente.
+     *
+     * @param requestModificaEscursione I dettagli della modifica richiesta.
+     * @param httpServletRequest         La richiesta HTTP effettuata.
+     * @return Una risposta che indica il successo della modifica.
+     * @throws EntityNotFoundException Se l'escursione da modificare non viene trovata.
+     */
     @PatchMapping("/modifica")
+    @PreAuthorize("hasAuthority('ISTRUTTORE')")
     public ResponseEntity<?> modificaEscursione(@Valid @RequestBody RequestModificaEscursione requestModificaEscursione, HttpServletRequest httpServletRequest){
         try{
             return ResponseEntity.ok(escursioneService.modificaEscursione(requestModificaEscursione, httpServletRequest));

@@ -66,6 +66,7 @@ public class EscursioneService {
         // creo un osservatore con dentro un'istruttore
         observerUser = new ObserverUser(istruttore);
         main.addObserver(observerUser);
+        escursioniRepo.save(escursione);
 
         return escursione;
 
@@ -198,44 +199,58 @@ public class EscursioneService {
         return responseEscursione;
     }
 
+    /**
+     * Modifica un'escursione esistente con i dettagli forniti nella richiesta.
+     *
+     * @param requestModificaEscursione I dettagli della modifica richiesta.
+     * @param httpServletRequest         La richiesta HTTP effettuata.
+     * @return Una stringa che indica il successo della modifica dell'escursione.
+     * @throws RicercaFallita   Se l'escursione da modificare non viene trovata.
+     * @throws ModificaFallita Se l'utente non è l'organizzatore dell'escursione e non ha i permessi per apportare modifiche.
+     */
+
     public String modificaEscursione(RequestModificaEscursione requestModificaEscursione, HttpServletRequest httpServletRequest){
+        // Ottiene l'utente loggato dalla richiesta HTTP.
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
+
+        // Trova l'escursione con l'ID fornito o restituisce null se non trovata.
         Escursione escursione = escursioniRepo.findById( Integer.parseInt(requestModificaEscursione.getId())).orElse(null);
 
+        // Verifica se l'escursione esiste.
         if(escursione == null)
             throw new RicercaFallita("l'escursione inserita non esiste ");
-
+        // Verifica se l'utente loggato è l'organizzatore dell'escursione o ha i permessi per apportare modifiche.
         if(!escursione.getOrganizzatore().equals(utenteLoggato))
             throw new ModificaFallita("soltato l'isturttore che ha organizzato l'escuesione può apportare modific he");
 
-        String nome = requestModificaEscursione.getNomeEscursione();
-        Integer numeroPartecipanti = Integer.parseInt(requestModificaEscursione.getPostiDisponibili());
-        LocalDateTime dataEscursione = Utils.formatterDataTime(requestModificaEscursione.getData());
+        // Estrae i dettagli della modifica dalla richiesta.
+        String numero = requestModificaEscursione.getPostiDisponibili();
+        String dataEscursione = requestModificaEscursione.getData();
         String descrizione = requestModificaEscursione.getDescrizione();
-        Boolean statoIscrzione = Boolean.valueOf(requestModificaEscursione.getStatoIscrizione());
+        String stato =requestModificaEscursione.getStatoIscrizione();
+        String nome = requestModificaEscursione.getNomeEscursione();
 
-        if(requestModificaEscursione.getNomeEscursione() != null)
+        // Applica le modifiche all'escursione, se i campi non sono vuoti o nulli.
+        if(requestModificaEscursione.getNomeEscursione() != null && !(requestModificaEscursione.getNomeEscursione().isEmpty()))
             escursione.setNomeEscursione(nome);
-        if(requestModificaEscursione.getPostiDisponibili() !=null)
-            escursione.setPostiDisponibili(numeroPartecipanti);
-        if(requestModificaEscursione.getData() != null)
-            escursione.setData(dataEscursione);
-        if(requestModificaEscursione.getDescrizione() != null)
+        if(requestModificaEscursione.getPostiDisponibili() !=null && !(requestModificaEscursione.getPostiDisponibili().isEmpty()))
+            escursione.setPostiDisponibili(Integer.parseInt(numero));
+        if(requestModificaEscursione.getData() != null && !(requestModificaEscursione.getData().isEmpty()))
+            escursione.setData(Utils.formatterDataTime(dataEscursione));
+        if(requestModificaEscursione.getDescrizione() != null && !(requestModificaEscursione.getDescrizione().isEmpty()))
             escursione.setDescrizione(descrizione);
-        if(requestModificaEscursione.getStatoIscrizione() != null)
-            escursione.setStatoEscursione(statoIscrzione);
+        if(requestModificaEscursione.getStatoIscrizione() != null && !(requestModificaEscursione.getStatoIscrizione().isEmpty()))
+            escursione.setStatoEscursione(Boolean.valueOf(stato));
 
+        // Salva le modifiche dell'escursione nel repository.
         escursioniRepo.save(escursione);
 
-        // verifico che gli osservatori siano stati anotificati
+        // verifico che gli osservatori siano stati notificati
         for(Observer o: main.getObserverList()){
             o.notify();
         }
 
         return "escursione modificata correttamente";
-
-
-
 
     }
 

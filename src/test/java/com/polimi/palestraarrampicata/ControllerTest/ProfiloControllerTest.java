@@ -260,4 +260,22 @@ public class ProfiloControllerTest {
                         .andExpect(status().isBadRequest());
     }
 
+
+    /**
+     * Testa il comportamento dell'endpoint per il logout di un utente quando è autenticato.
+     * Verifica che una richiesta GET a /profilo/logout restituisca uno stato di successo (HTTP 200 OK).
+     * Eseguiamo una richiesta HTTP GET per effettuare il logout dell'utente.
+     * Verifichiamo che la risposta HTTP abbia uno stato 200 OK.
+     * @throws Exception se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser
+    public  void logoutUtente_ReturnOk() throws Exception{
+        mvc.perform(MockMvcRequestBuilders.get("/profilo/logout")
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+
+    }
+
+
 }

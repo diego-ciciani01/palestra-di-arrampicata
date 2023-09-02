@@ -81,8 +81,7 @@ public class CorsoControllerTest {
      */
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
-
-    public void givenCorso_CreaCorso_ReturnBadRequest() throws Exception{
+    public void givenCorso_CreaCorso_ReturnBadRequest_EntityNotFound() throws Exception{
         Corso corso = Stub.getCorsoStub();
         RequestCorso requestCorso = Request.toRequestCorsoByCorsoMapper(corso);
         requestCorso.setEmailIstruttore("email sbagliata");
@@ -95,6 +94,49 @@ public class CorsoControllerTest {
                 .andExpect(status().isBadRequest());
 
     }
+    /**
+     * Caso di test per verificare che la creazione di un corso restituisca uno stato di forbidden (HTTP 403 Forbidden).
+     * Il test simula una richiesta POST all'endpoint /api/v1/corso/crea per creare un corso.
+     * Il mock corsoService è configurato per lanciare un'eccezione di tipo EntityNotFoundException.
+     * Il test verifica che la risposta HTTP abbia uno stato 403 Forbidden.
+     */
+    @Test
+    @WithMockUser()
+    public void givenCorso_CreaCorso_ReturnBadRequest_Forbidden() throws Exception{
+        Corso corso = Stub.getCorsoStub();
+        RequestCorso requestCorso = Request.toRequestCorsoByCorsoMapper(corso);
+        requestCorso.setEmailIstruttore("email sbagliata");
+        String requestCorso_string = new ObjectMapper().writeValueAsString(requestCorso);
+        Mockito.when(corsoService.creaCorso(any())).thenThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/corso/crea")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestCorso_string))
+                        .andExpect(status().isForbidden());
+
+    }
+
+    /**
+     * Testa il comportamento dell'endpoint per creare un corso quando l'utente ha il ruolo ADMIN.
+     * Verifica che una richiesta POST a /api/v1/corso/crea restituisca uno stato di errore bad request (HTTP 400).
+     * Il mock corsoService è configurato per lanciare un'eccezione IllegalStateException durante la richiesta,
+     * simboleggiando una situazione in cui l'entità dell'istruttore associato al corso non è trovata.
+     * Viene eseguita la chiamata alla richiesta POST e viene verificato che la risposta HTTP abbia uno stato 400 Bad Request.
+     */
+    @Test
+    @WithMockUser(value = "spring", authorities = {"ADMIN"})
+    public void givenCorso_CreaCorso_ReturnBadRequest_IllegalStateException() throws Exception{
+        Corso corso = Stub.getCorsoStub();
+        RequestCorso requestCorso = Request.toRequestCorsoByCorsoMapper(corso);
+        requestCorso.setEmailIstruttore("email sbagliata");
+        String requestCorso_string = new ObjectMapper().writeValueAsString(requestCorso);
+        Mockito.when(corsoService.creaCorso(any())).thenThrow(new IllegalStateException());
+        mvc.perform(MockMvcRequestBuilders.post("/api/v1/corso/crea")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestCorso_string))
+                        .andExpect(status().isBadRequest());
+
+    }
+
 
     /**
      * Testa il comportamento dell'endpoint per eliminare un corso quando l'utente ha il ruolo ADMIN.
@@ -124,9 +166,8 @@ public class CorsoControllerTest {
     @Test
     @WithMockUser(value = "spring", authorities = {"ADMIN"})
     public void deleteCorso_ReturnInternalServerError_EntityNotFound() throws Exception{
-        ResponseCorso responseCorso = Stub.getResponseCorsoStub();
         given(corsoService.eliminaCorso(any())).willThrow(new EntityNotFoundException());
-        mvc.perform(MockMvcRequestBuilders.delete("/api/v1/corso/elimina/" +"2")
+        mvc.perform(MockMvcRequestBuilders.delete("/api/v1/corso/elimina/" +2)
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isInternalServerError());
     }
@@ -150,6 +191,93 @@ public class CorsoControllerTest {
     }
 
     /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi quando l'utente ha effettuato l'accesso come amministratore.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll restituisca uno stato di successo (HTTP 200 OK).
+     * Prepariamo una lista di corsi di esempio.
+     * Configuriamo il mock corsoService per restituire questa lista come risposta.
+     * Eseguiamo una richiesta HTTP GET per ottenere tutti i corsi.
+     * Verifichiamo che la risposta HTTP abbia uno stato 200 OK.
+     * @throws Exception se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser(value = "spring", authorities = {"ADMIN"})
+    public void getAllCorsi_ReturnOk() throws  Exception {
+        List <ResponseCorso> responseCorso = Stub.getListResponseCorsoStub();
+        given(corsoService.getListCorso()).willReturn(responseCorso);
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/corso/getAll")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+    }
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi visibili a un utente quando è autenticato.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll/corsiVisibili restituisca uno stato di successo (HTTP 200 OK).
+     * Configuriamo il mock corsoService per restituire una lista di corsi come risposta.
+     * Eseguiamo una richiesta HTTP GET per ottenere tutti i corsi visibili a un utente.
+     * Verifichiamo che la risposta HTTP abbia uno stato 200 OK.
+     * @throws Exception se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser()
+    public  void getAllCorsiVisibili_ReturnOk() throws  Exception{
+        List <ResponseCorso> responseCorso = Stub.getListResponseCorsoStub();
+        given(corsoService.getAllCorsiVisibiliUtente(any())).willReturn(responseCorso);
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/corso/getAll/corsiVisibili")
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser()
+    public  void getAllCorsiVisibili_ReturnOk_EntityNotFound() throws  Exception{
+        List <ResponseCorso> responseCorso = Stub.getListResponseCorsoStub();
+        given(corsoService.getAllCorsiVisibiliUtente(any())).willThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/corso/getAll/corsiVisibili")
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isInternalServerError());
+    }
+
+
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi quando l'utente ha effettuato l'accesso come amministratore.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll restituisca uno stato di errore interno del server (HTTP 500 Internal Server Error).
+     * Prepariamo una lista di corsi di esempio.
+     * Configuriamo il mock corsoService per lanciare un'eccezione EntityNotFoundException.
+     * Eseguiamo una richiesta HTTP GET per ottenere tutti i corsi.
+     * Verifichiamo che la risposta HTTP abbia uno stato 500 Internal Server Error.
+    * */
+
+    @Test
+    @WithMockUser(value = "spring", authorities = {"ADMIN"})
+    public void getAllCorsi_ReturnInternalServerError_entityNotFound() throws  Exception {
+        List <ResponseCorso> responseCorso = Stub.getListResponseCorsoStub();
+        given(corsoService.getListCorso()).willThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/corso/getAll")
+                        .contentType(MediaType.APPLICATION_JSON))
+                        .andExpect(status().isInternalServerError());
+    }
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi quando un utente non autorizzato tenta l'accesso.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll restituisca uno stato di "Forbidden" (HTTP 403 Forbidden).
+     * Configuriamo il mock corsoService per lanciare un'eccezione EntityNotFoundException quando richiamato.
+     * Eseguiamo una richiesta HTTP GET per ottenere tutti i corsi.
+     * Verifichiamo che la risposta HTTP abbia uno stato 403 Forbidden, indicando che l'accesso è negato.
+     * @throws Exception se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser()
+    public void getAllCorsi_ReturnForbidden() throws  Exception {
+        given(corsoService.getListCorso()).willThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/corso/getAll")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+
+    }
+
+    /**
      * Testa il comportamento dell'endpoint per ottenere tutti i corsi di un istruttore quando l'utente ha effettuato l'accesso.
      * Verifica che una richiesta GET a /api/v1/corso/getAll/byInstructor/{id_istruttore} restituisca uno stato di successo (HTTP 200 OK).
      * Il mock corsoService è configurato per restituire una lista di corsi come risposta.
@@ -166,7 +294,6 @@ public class CorsoControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(responseCorsiString))
                 .andExpect(status().isOk());
-
 
     }
 
@@ -186,6 +313,48 @@ public class CorsoControllerTest {
                 .andExpect(status().isInternalServerError());
 
     }
+
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi in base alla difficoltà quando un utente è autenticato.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll/byDifficolta/{difficolta} restituisca uno stato di successo (HTTP 200 OK).
+     * Scenario di test:
+     * Configuriamo il parametro "difficolta" da utilizzare nella richiesta GET.
+     * Configuriamo il mock corsoService per restituire una lista di corsi come risposta.
+     * Eseguiamo una richiesta HTTP GET per ottenere tutti i corsi con la difficoltà specificata.
+     * Verifichiamo che la risposta HTTP abbia uno stato 200 OK, indicando che la richiesta è stata completata con successo.
+     * @throws Exception se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser()
+    public void getAll_ByDifficolta_ReturnOk() throws  Exception{
+        String difficolta = "Facile";
+        List<ResponseCorso> responseCorso = Stub.getListResponseCorsoStub();
+        given(corsoService.getCorsiByDifficolta(any())).willReturn(responseCorso);
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/corso/getAll/byDifficolta/"+ difficolta)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    /**
+     * Testa il comportamento dell'endpoint per ottenere tutti i corsi in base alla difficoltà quando un utente è autenticato.
+     * Verifica che una richiesta GET a /api/v1/corso/getAll/byDifficolta/{difficolta} restituisca uno stato di errore interno del server (HTTP 500 Internal Server Error).
+     * Configuriamo il parametro "difficolta" da utilizzare nella richiesta GET.
+     * Configuriamo il mock corsoService per lanciare un'eccezione EntityNotFoundException durante la chiamata al servizio.
+     * Eseguiamo una richiesta HTTP GET per ottenere tutti i corsi con la difficoltà specificata.
+     * Verifichiamo che la risposta HTTP abbia uno stato 500 Internal Server Error, indicando un errore interno del server.
+     * @throws Exception se si verificano eccezioni durante l'esecuzione del test.
+     */
+    @Test
+    @WithMockUser()
+    public void getAll_ByDifficolta_ReturnInternalServerError_EntityNotFound() throws  Exception{
+        String difficolta = "Facile";
+        List<ResponseCorso> responseCorso = Stub.getListResponseCorsoStub();
+        given(corsoService.getCorsiByDifficolta(any())).willThrow(new EntityNotFoundException());
+        mvc.perform(MockMvcRequestBuilders.get("/api/v1/corso/getAll/byDifficolta/"+ difficolta)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isInternalServerError());
+    }
+
+
 
     /**
      * Testa il comportamento dell'endpoint per iscriversi a un corso con un utente autorizzato.

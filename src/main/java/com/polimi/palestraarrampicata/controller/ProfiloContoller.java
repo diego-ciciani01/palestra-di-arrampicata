@@ -139,7 +139,7 @@ public class ProfiloContoller {
             // Se si verifica un errore durante il logout
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        catch (Exception e) {
+        catch (EntityNotFoundException e) {
             // Se si verifica un errore interno durante il logout
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

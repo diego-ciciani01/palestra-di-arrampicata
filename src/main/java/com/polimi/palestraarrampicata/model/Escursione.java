@@ -5,6 +5,8 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -19,7 +21,7 @@ public class Escursione {
 
     @Column(name = "data_pubblicazione")
     @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private Date data;
+    private LocalDateTime data;
 
     @Column(name = "posti-disponibili")
     private Integer postiDisponibili;
@@ -38,6 +40,6 @@ public class Escursione {
     private Boolean statoEscursione;
 
     @ManyToMany(mappedBy = "escursioniPartecipate", fetch = FetchType.LAZY)
-    private List<Utente> utentiPartecipanti = null;
+    private List<Utente> utentiPartecipanti;
 
 }

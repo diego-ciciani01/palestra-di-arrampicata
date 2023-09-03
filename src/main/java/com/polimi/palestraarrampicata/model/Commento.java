@@ -30,6 +30,10 @@ public class Commento {
     private List<Commento> commentiFigli = null;
 
     @ManyToOne
+    @JoinColumn(name = "istruttoreCommentato")
+    private Utente istruttoreCommentato;
+
+    @ManyToOne
     @JoinColumn(name = "commentatore")
     private Utente commentatore;
 

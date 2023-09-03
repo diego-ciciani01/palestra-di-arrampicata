@@ -1,13 +1,25 @@
 package com.polimi.palestraarrampicata.repository;
 
-import com.polimi.palestraarrampicata.model.Utente;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.polimi.palestraarrampicata.model.*;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface UtenteRepo extends JpaRepository<Utente, Integer> {
-    Utente findByUsernameOrEmail(String username, String email);
+import java.util.List;
+import java.util.Optional;
 
-    Utente findByUsername(String username);
+@Repository
+public interface UtenteRepo extends CrudRepository<Utente, Integer> {
+    Optional<Utente> findUserByEmail(String username);
+
+    Optional <Utente> findByEmail(String email);
+
+    Optional<Utente> findUserByEmailAndRuolo(String email, Ruolo istruttore);
+
+    List<Corso> findCorsiTenutiByEmail(String email);
+
+    Optional<Utente> findByIscrittiPalestra(Palestra palestra);
+
 }
 

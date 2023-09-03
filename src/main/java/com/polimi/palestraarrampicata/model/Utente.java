@@ -1,21 +1,32 @@
 package com.polimi.palestraarrampicata.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Cleanup;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name ="utente")
-public class Utente {
+@ToString
+public class Utente implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false) // updatable = false: non permette di modiicare l'id
+    @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
 
     @Column(name = "nome")
@@ -24,19 +35,15 @@ public class Utente {
     @Column(name = "cognome")
     private String cognome;
 
-    @Column(name = "username")
-    private String username;
-
     @Column(name = "foto_profilo")
     @Lob
     private byte[] fotoProfilo;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "data_nascita")
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
-    private LocalDateTime dataDiNascita;
+    private LocalDate dataDiNascita;
 
     @Enumerated(EnumType.ORDINAL)
     private Ruolo ruolo;
@@ -44,61 +51,97 @@ public class Utente {
     @Column(name = "password")
     private String password;
 
-    @OneToMany(mappedBy = "commentatore", fetch = FetchType.LAZY)
-    private List<Commento> commenti = null;
+    @OneToMany(mappedBy = "commentatore")
+    private List<Commento> commenti;
 
-    @OneToMany(mappedBy = "valutatore", fetch = FetchType.LAZY)
-    private List<Valutazione> valutazioniInserite = null;
+    @OneToMany(mappedBy = "valutatore")
+    private List<Valutazione> valutazioniInserite;
 
-    @OneToMany(mappedBy = "valutato", fetch = FetchType.LAZY)
-    private List<Valutazione> valutazioniRicevute = null;
+    @OneToMany(mappedBy = "valutato")
+    private List<Valutazione> valutazioniRicevute;
 
-    @OneToMany(mappedBy = "organizzatore", fetch = FetchType.LAZY )
-    private List<Escursione> escursioniOrganizzate = null;
+    @OneToMany(mappedBy = "organizzatore")
+    private List<Escursione> escursioniOrganizzate;
 
     @ManyToMany
     @JoinTable(name = "partecipazione", joinColumns =
     @JoinColumn( name = "utente") , inverseJoinColumns =
     @JoinColumn(name = "escursione"))
-    private List<Escursione> escursioniPartecipate = null;
+    private List<Escursione> escursioniPartecipate;
 
+    @Column
+    private boolean accountExpired;
+
+    @JsonBackReference
     @ManyToMany
     @JoinTable(name = "invito", joinColumns =
     @JoinColumn( name = "utente") , inverseJoinColumns =
     @JoinColumn(name = "lezione"))
-    private List<Lezione> inviti = null;
+    private List<Lezione> inviti;
 
-    @OneToMany(mappedBy = "iscritto", fetch = FetchType.LAZY)
-    private List<Lezione> lezioniIscritte = null;
+    @OneToMany(mappedBy = "istruttore")
+    private List<Lezione> lezioniIscritte;
 
-    @OneToMany(mappedBy = "noleggiatore", fetch = FetchType.LAZY)
-    private List<Attrezzatura> attrezzatureNoleggiate = null;
+    @OneToMany(mappedBy = "noleggiatore")
+    private List<Noleggio> attrezzatureNoleggiate;
 
     @ManyToOne()
     @JoinColumn(name = "iscritti_palestra")
     private Palestra iscrittiPalestra;
 
-    @OneToMany(mappedBy = "istruttoreCorso", fetch = FetchType.LAZY)
-    private List<Corso> corsiTenuti = null;
+    @OneToMany(mappedBy = "istruttoreCorso")
+    private List<Corso> corsiTenuti;
+
+    @Column
+    private boolean enable;
+
+    @Column
+    private boolean locked;
 
     @ManyToMany
     @JoinTable(name="iscrizione", joinColumns =
     @JoinColumn(name = "utente"), inverseJoinColumns =
     @JoinColumn(name ="corso"))
-    private List<Corso> corsiIscritto = null;
+    private List<Corso> corsiIscritto;
+
+    @OneToMany(mappedBy = "istruttoreCommentato")
+    private List<Commento> commentiIstruttore;
+
+    public Utente(String email, Ruolo ruolo, String password, boolean enable) {
+        this.email = email;
+        this.ruolo = ruolo;
+        this.password = password;
+        this.enable = enable;
+    }
 
     @Override
-    public String toString() {
-        return "Utente{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", cognome='" + cognome + '\'' +
-                ", fotoProfilo=" + Arrays.toString(fotoProfilo) +
-                ", email='" + email + '\'' +
-                ", dataDiNascita=" + dataDiNascita +
-                ", ruolo=" + ruolo +
-                ", password='" + password + '\'' +
-                ", commenti=" + commenti +
-                '}';
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority(ruolo.name()));
+    }
+
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return !accountExpired;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !locked;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enable;
     }
 }

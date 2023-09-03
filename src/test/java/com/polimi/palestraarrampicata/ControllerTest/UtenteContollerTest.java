@@ -226,13 +226,13 @@ public class UtenteContollerTest {
         RequestValutazione requestValutazione = Request.toRequestValutazioneByValutazioneMapper(valutazione);
         ResponseValutazione responseValutazione = Response.toValutazioneResponseByValutazioneMapper(valutazione);
         String requestValutazione_asString = new ObjectMapper().writeValueAsString(requestValutazione);
-        given(utenteService.creaValutazione(any(), any())).willReturn(valutazione);
+        String msg = "valutazione fatta";
+        given(utenteService.creaValutazione(any(), any())).willReturn(msg);
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/user/valuta/istruttore")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestValutazione_asString))
-                        .andExpect(status().isOk())
-                        .andExpect(jsonPath("$.id", is(Integer.parseInt(responseValutazione.getId()))))
-                        .andExpect(jsonPath("$.valore", is(Integer.parseInt(responseValutazione.getValore()))));
+                        .andExpect(status().isOk());
+
 
 
     }

@@ -73,6 +73,7 @@ public class AttrezzaturaService {
     public List<ResponseAttrezzatura> getListAttrezzaturaPerTipo(RequestAttrezzatura requestAttrezzatura){
         // Ottiene l'attrezzatura corrispondente al nome specificato dalla repository attrezzaturaRepo.
         Attrezzatura attrezzature = attrezzaturaRepo.findByNomeAttrezzatura(requestAttrezzatura.getNomeAttrezzo());
+        if(attrezzature == null) throw new RicercaFallita("l'attrezzo inserito non è presente in magazzino");
         List<ResponseAttrezzatura> attrezzaturaResponse = new ArrayList<>();
         // Itera attraverso le taglie dell'attrezzatura per costruire le risposte.
         for(Taglia taglia: attrezzature.getNomeTaglia() ){

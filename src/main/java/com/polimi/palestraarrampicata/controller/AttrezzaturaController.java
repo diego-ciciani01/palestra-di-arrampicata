@@ -44,7 +44,7 @@ public class AttrezzaturaController {
      * @return
      */
 
-    @GetMapping("/getAll/type/")
+    @GetMapping("/getAll/type")
     public ResponseEntity<?> getAllEquipmentType(@Valid @RequestBody RequestAttrezzatura requestAttrezzatura){
         try {
             return  ResponseEntity.ok(attrezzaturaService.getListAttrezzaturaPerTipo(requestAttrezzatura));

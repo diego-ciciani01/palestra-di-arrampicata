@@ -246,7 +246,7 @@ public class PalestraControllerTest {
      */
     @Test
     @WithMockUser()
-    public void disiscrivi_Utente_ReturnBadRequest_EntityNotFound () throws Exception{
+    public void disiscrivi_Utente_ReturnBadRequest_EntityNotFound() throws Exception{
         Utente utente = Stub.getUtenteStub();
         String msg = "utente " + utente.getEmail() + " disiscritto correttamente";
         given(palestraService.disiscriviUtente(any())).willThrow(new EntityNotFoundException());
@@ -291,6 +291,72 @@ public class PalestraControllerTest {
                 .andExpect(status().isBadRequest());
 
     }
+    /**
+     * Testa il comportamento dell'endpoint per eliminare una palestra.
+     * Verifica che una richiesta DELETE a /api/v1/palestra/elimina/{email_palestra} restituisca uno stato di Ok (HTTP 200 OK)
+     * quando l'eliminazione della palestra viene eseguita correttamente.
+     * Il mock palestraService è configurato per restituire un messaggio di successo.
+     * Viene eseguita la chiamata alla richiesta DELETE e viene verificato che la risposta HTTP abbia uno stato di Ok.
+     *
+     * @throws Exception Se si verifica un errore durante il test.
+     */
+    @Test
+    @WithMockUser(value = "spring", authorities = {"ADMIN"})
+    public  void  eliminaPalestra_ReturnOk() throws  Exception{
+        String msg = "palestra eliminata correttamente";
+        String palestra = Stub.getPalestraStub().getEmailPalestra();
+        given(palestraService.eliminaPalestra(any())).willReturn(msg);
+        mvc.perform((MockMvcRequestBuilders.delete("/api/v1/palestra/elimina/" + palestra))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+    }
+
+    /**
+     * Testa il comportamento dell'endpoint per eliminare una palestra.
+     * Verifica che una richiesta DELETE a /api/v1/palestra/elimina/{email_palestra} restituisca uno stato Forbidden (HTTP 403 Forbidden)
+     * quando un utente non autorizzato tenta di eseguire l'eliminazione della palestra.
+     * Il mock palestraService è configurato per restituire un messaggio di successo.
+     * Viene eseguita la chiamata alla richiesta DELETE e viene verificato che la risposta HTTP abbia uno stato Forbidden.
+     *
+     * @throws Exception Se si verifica un errore durante il test.
+     */
+    @Test
+    @WithMockUser()
+    public  void  eliminaPalestra_ReturnForbidden() throws  Exception{
+        String msg = "palestra eliminata correttamente";
+        String palestra = Stub.getPalestraStub().getEmailPalestra();
+        given(palestraService.eliminaPalestra(any())).willReturn(msg);
+        mvc.perform((MockMvcRequestBuilders.delete("/api/v1/palestra/elimina/" + palestra))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+
+    }
+    /**
+     * Testa il comportamento dell'endpoint per eliminare una palestra quando si verifica un'entità non trovata.
+     * Verifica che una richiesta DELETE a /api/v1/palestra/elimina/{email_palestra} restituisca uno stato BadRequest (HTTP 400 Bad Request)
+     * quando il servizio di palestra restituisce un'eccezione di tipo EntityNotFoundException.
+     * Il mock palestraService è configurato per lanciare un'eccezione di tipo EntityNotFoundException.
+     * Viene eseguita la chiamata alla richiesta DELETE e viene verificato che la risposta HTTP abbia uno stato BadRequest.
+     *
+     * @throws Exception Se si verifica un errore durante il test.
+     */
+    @Test
+    @WithMockUser(value = "spring", authorities = {"ADMIN"})
+    public  void  eliminaPalestra_ReturnBadRequest_EntityNotFound() throws  Exception{
+        String msg = "palestra eliminata correttamente";
+        String palestra = Stub.getPalestraStub().getEmailPalestra();
+        given(palestraService.eliminaPalestra(any())).willThrow(new EntityNotFoundException());
+        mvc.perform((MockMvcRequestBuilders.delete("/api/v1/palestra/elimina/" + palestra))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+    }
+
+
+
+
+
 
 
 

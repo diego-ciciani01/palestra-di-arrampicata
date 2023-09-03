@@ -84,6 +84,7 @@ public class PalestraService {
         // Itera attraverso le palestre ottenute e crea oggetti ResponsePalestra per ciascuna
         for(Palestra p: palestre){
             palestreResponse.add(ResponsePalestra.builder()
+                            .emailPalestra(p.getEmailPalestra())
                             .nome(p.getNome())
                             .id(p.getId().toString())
                             .build());

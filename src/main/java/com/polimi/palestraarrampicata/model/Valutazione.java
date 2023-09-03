@@ -2,6 +2,8 @@ package com.polimi.palestraarrampicata.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
@@ -10,6 +12,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "valutazione")
+@ToString
 public class Valutazione {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -124,7 +124,13 @@ public class CorsoService {
          Corso corsoDaEliminare =  corsoRepo.findById(idCorso)
                  .orElseThrow(()-> new IllegalStateException("il corso da eliminare non esiste"));
 
-         // Elimina il corso dalla repository corsoRepo.
+        Iterable<Utente> allUser = utenteRepo.findAll();
+        for (Utente utente :allUser){
+            if(utente.getCorsiIscritto().contains(corsoDaEliminare))
+                utente.setCorsiIscritto(null);
+        }
+         corsoDaEliminare.setIscritti(null);
+          // Elimina il corso dalla repository corsoRepo.
          corsoRepo.delete(corsoDaEliminare);
 
         // Crea un oggetto ResponseCorso con i dettagli del corso eliminato e lo restituisce.
@@ -133,6 +139,8 @@ public class CorsoService {
                     .nome(corsoDaEliminare.getNome())
                     .emailIstruttore(corsoDaEliminare.getIstruttoreCorso().getEmail())
                     .build();
+
+
 
     }
 
@@ -266,7 +274,7 @@ public class CorsoService {
      * @return L'oggetto Corso a cui l'utente si è iscritto.
      * @throws RicercaFallita Se l'utente non è un utente o se il corso cercato non esiste.
      */
-    public Corso iscrivitiCorso(RequestIscriviti requestIscriviti, HttpServletRequest httpServletRequest) throws EntityNotFoundException{
+    public String iscrivitiCorso(RequestIscriviti requestIscriviti, HttpServletRequest httpServletRequest) throws EntityNotFoundException{
         // Ottiene l'utente loggato dalla richiesta HTTP.
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
 
@@ -307,7 +315,7 @@ public class CorsoService {
         utenteRepo.save(utenteLoggato);
 
         // Restituisce il corso a cui l'utente si è iscritto.
-        return corso;
+        return "iscrizione avvenuta correttamente";
 
     }
 

@@ -14,6 +14,6 @@ import java.util.Optional;
 public interface ValutazioneRepo extends CrudRepository<Valutazione, Integer> {
 
     Valutazione findByValutatoreAndValutato(Utente valutatore, Utente valutato);
-    List<Valutazione> findAllByValutatore(Utente valutato);
+    List<Valutazione> findAllByValutato(Utente valutato);
 
 }

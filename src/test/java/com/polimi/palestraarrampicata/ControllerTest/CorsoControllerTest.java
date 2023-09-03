@@ -368,14 +368,14 @@ public class CorsoControllerTest {
     @WithMockUser(value = "spring", authorities = {"UTENTE"})
     public void iscriviCorso_ReturnOk() throws Exception{
         RequestIscriviti requestIscriviti = Stub.getRequestIscrizione();
-        Corso corso = Stub.getCorsoStub();
+        String msg ="iscrizione avvenuta con successo";
         String requestIscriviti_string = new ObjectMapper().writeValueAsString(requestIscriviti);
-        given(corsoService.iscrivitiCorso(any(), any())).willReturn(corso);
+        given(corsoService.iscrivitiCorso(any(), any())).willReturn(msg);
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/corso/iscriviti")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestIscriviti_string))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(corso.getId())));
+                .andExpect(status().isOk());
+
 
 
     }

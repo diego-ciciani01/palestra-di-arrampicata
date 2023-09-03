@@ -28,4 +28,6 @@ public class RequestIscrivitiPalestra {
     @NotNull
     @NotEmpty
     private String nomePalestra;
+
+
 }

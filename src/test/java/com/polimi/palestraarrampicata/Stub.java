@@ -329,7 +329,7 @@ public class Stub {
                             .istruttore(getInstructorStub())
                             .tipologiaLezione(TipologiaLezione.Introduzione)
                             .durata(2.30F)
-                            .utentiInvitati(getListUtentiStub())
+                            .utenteMittente(getListUtentiStub())
                             .istruttore(getInstructorStub())
                             .build()
 

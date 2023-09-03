@@ -101,7 +101,7 @@ public class UtenteController {
      */
     @PreAuthorize("hasAuthority('UTENTE')")
     @PostMapping("valuta/istruttore")
-    public ResponseEntity<?> creaValutazione(@Valid @RequestBody RequestValutazione requestValutazione, BindingResult result, HttpServletRequest request){
+    public ResponseEntity<?> creaValutazione(@Valid @RequestBody RequestValutazione requestValutazione, HttpServletRequest request){
         try{
             return ResponseEntity.ok(utenteService.creaValutazione(request, requestValutazione));
         }catch (IllegalStateException ex){

@@ -168,10 +168,11 @@ public class EscursioneControllerTest {
     @Test
     @WithMockUser(value = "spring", authorities = {"UTENTE"})
     public void iscriviti_escursione_RerurnOk()throws Exception{
-        Escursione escursione = Stub.getEscursioneStub();
+
+        String msg = "iscrizione avvenuta correttamente";
         Integer id = 1;
         String id_str = objectMapper.writeValueAsString(id);
-        given(escursioneService.partecipaEscursione(any(), any())).willReturn(escursione);
+        given(escursioneService.partecipaEscursione(any(), any())).willReturn(msg);
         mvc.perform(MockMvcRequestBuilders.post("/api/v1/escursione/iscriviti/"+id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(id_str))

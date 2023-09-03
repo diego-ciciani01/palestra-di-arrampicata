@@ -107,7 +107,7 @@ public class EscursioneService {
      * @return L'oggetto Escursione a cui l'utente si è iscritto.
      * @throws RicercaFallita Se l'utente non è un utente normale o se l'escursione non è trovata.
      */
-    public Escursione partecipaEscursione(Integer id, HttpServletRequest httpServletRequest){
+    public String partecipaEscursione(Integer id, HttpServletRequest httpServletRequest){
         // Ottiene l'utente loggato dalla richiesta HTTP
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest, utenteRepo, jwtUtils);
 
@@ -138,8 +138,8 @@ public class EscursioneService {
         observerUser = new ObserverUser(utenteLoggato);
         main.addObserver(observerUser);
 
-        // Restituisce l'oggetto Escursione a cui l'utente si è iscritto
-        return escursione;
+        //restituisce il messaggio di avvenuta iscrizione
+        return "iscrizione avvenuta correttamente";
     }
 
     /**
@@ -229,7 +229,7 @@ public class EscursioneService {
         String descrizione = requestModificaEscursione.getDescrizione();
         String stato =requestModificaEscursione.getStatoIscrizione();
         String nome = requestModificaEscursione.getNomeEscursione();
-
+        escursione = new Escursione();
         // Applica le modifiche all'escursione, se i campi non sono vuoti o nulli.
         if(requestModificaEscursione.getNomeEscursione() != null && !(requestModificaEscursione.getNomeEscursione().isEmpty()))
             escursione.setNomeEscursione(nome);
@@ -247,7 +247,7 @@ public class EscursioneService {
 
         // verifico che gli osservatori siano stati notificati
         for(Observer o: main.getObserverList()){
-            o.notify();
+            o.update();
         }
 
         return "escursione modificata correttamente";

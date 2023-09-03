@@ -74,7 +74,7 @@ public class UtenteService implements UserDetailsService {
     }
 
     /**
-     * Ottiene la lista degli inviti alle lezioni accettati per l'utente autenticato.
+     * Ottiene la lista degli inviti alle lezioni accettati per l'utente autentificato.
      *
      * @param httpServletRequest HttpServletRequest utilizzato per ottenere l'utente autenticato.
      * @return Lista di inviti alle lezioni accettati per l'utente.
@@ -188,7 +188,7 @@ public class UtenteService implements UserDetailsService {
      * @param requestValutazione I dati della valutazione da creare.
      * @return La valutazione appena creata.
      */
-    public Valutazione creaValutazione(HttpServletRequest httpServletRequest, RequestValutazione requestValutazione){
+    public String creaValutazione(HttpServletRequest httpServletRequest, RequestValutazione requestValutazione){
         // Ottieni l'utente loggato dalla richiesta HTTP
         Utente utenteLoggato = Utils.getUserFromHeader(httpServletRequest,utenteRepo ,jwtUtils );
 
@@ -205,7 +205,7 @@ public class UtenteService implements UserDetailsService {
                 nuovaValutazione.setValutatore(utenteLoggato);
                 nuovaValutazione.setValutato(istruttoreDaValutare);
                 valutazioneRepo.save(nuovaValutazione);
-                return  nuovaValutazione;
+                return "valutazione inserita correttamente";
             }else{
                 throw new InserimentoValutazioneFallita("la valutazione è già stata inserita per questo istruttore");
             }
@@ -254,7 +254,7 @@ public class UtenteService implements UserDetailsService {
         Utente istruttore = utenteRepo.findUserByEmailAndRuolo(email, Ruolo.ISTRUTTORE)
                 .orElseThrow(() -> new EntityNotFoundException("l'istruttore inserito non esiste"));
         // Trova tutte le valutazioni ricevute dall'istruttore
-        List<Valutazione> valutazioniIstruttore = valutazioneRepo.findAllByValutatore(istruttore);
+        List<Valutazione> valutazioniIstruttore = valutazioneRepo.findAllByValutato(istruttore);
 
 
         // Se non ci sono valutazioni, restituisci un messaggio appropriato

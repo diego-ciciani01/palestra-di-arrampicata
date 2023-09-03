@@ -1,9 +1,6 @@
 package com.polimi.palestraarrampicata.model;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Date;
@@ -15,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 @Table(name = "lezione")
 public class Lezione {
     @Id
@@ -34,12 +32,12 @@ public class Lezione {
 
     @Enumerated(EnumType.ORDINAL)
     private TipologiaLezione tipologiaLezione;
-
+    /*
     @ManyToMany(mappedBy = "inviti", fetch = FetchType.LAZY)
     private List<Utente> utentiPartecipanti;
-
+    */
     @ManyToMany(mappedBy = "inviti", fetch = FetchType.LAZY)
-    private List<Utente>  utentiInvitati;
+    private List<Utente>  utenteMittente;
 
     @ManyToOne
     @JoinColumn(name = "istruttore")

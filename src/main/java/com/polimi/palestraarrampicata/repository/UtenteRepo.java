@@ -20,5 +20,6 @@ public interface UtenteRepo extends CrudRepository<Utente, Integer> {
     List<Corso> findCorsiTenutiByEmail(String email);
 
     Optional<Utente> findByIscrittiPalestra(Palestra palestra);
+
 }
 

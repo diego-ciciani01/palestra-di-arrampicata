@@ -11,4 +11,5 @@ public class ResponsePalestra {
     private String id;
     private String nome;
     private String message;
+    private String emailPalestra;
 }

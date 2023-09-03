@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name ="utente")
+@ToString
 public class Utente implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -50,7 +50,7 @@ public class LezioneService {
 
         // Trova l'istruttore specificato nella richiesta, sellavo una eccezione nel caso di istruttore non trovato
         Utente istruttore = utenteRepo.findUserByEmailAndRuolo(request.getInstructorEmail(), Ruolo.ISTRUTTORE)
-                .orElseThrow(()->new EntityNotFoundException("L'istruttore non esiste"));
+                .orElseThrow(()->new EntityNotFoundException("L'istruttore inserito non esiste"));
 
         // Controlla se l'istruttore è già occupato nelle date della lezione
         List<Lezione> list  = lezioneRepo.findAllByIstruttore(istruttore);
@@ -82,18 +82,24 @@ public class LezioneService {
 
         // Aggiunta dell'utente loggato agli invitati e dell'invito all'utente loggato
         List<Lezione> inviti = utenteLoggato.getInviti();
-        List<Utente> utententiInvitati = lezione.getUtentiInvitati();
-        if(inviti == null)
+        List<Utente> utententiInvitati = lezione.getUtenteMittente();
+        if(inviti == null) {
             inviti = new ArrayList<>();
-
-        if(utententiInvitati == null)
+            inviti.add(lezione);
+            utenteLoggato.setInviti(inviti);
+        }else {
+            inviti.add(lezione);
+            utenteLoggato.setInviti(inviti);
+        }
+        if(utententiInvitati == null) {
             utententiInvitati = new ArrayList<>();
+            utententiInvitati.add(utenteLoggato);
+            lezione.setUtenteMittente(utententiInvitati);
+        }else {
+            utententiInvitati.add(utenteLoggato);
+            lezione.setUtenteMittente(utententiInvitati);
+        }
 
-        inviti.add(lezione);
-        utententiInvitati.add(utenteLoggato);
-
-        utenteLoggato.setInviti(inviti);
-        lezione.setUtentiInvitati(utententiInvitati);
 
         // Salvataggio dell'entità lezione e dell'utente
         lezioneRepo.save(lezione);
@@ -136,17 +142,6 @@ public class LezioneService {
                 if(Boolean.valueOf(request.getAccetta())){
                     // Imposta lo stato della lezione come accettato
                     lezione.setStatoLezione(Boolean.valueOf(request.getAccetta()));
-
-                    if(lezione.getUtentiInvitati().isEmpty()){
-
-                        // Se non ci sono utenti invitati, impostare direttamente gli utenti partecipanti
-                        List<Utente> utentiInvitati = new ArrayList<>();
-                        utentiInvitati = lezione.getUtentiInvitati();
-                        lezione.setUtentiPartecipanti(utentiInvitati);
-                    }else {
-                        // Aggiungi gli utenti invitati agli utenti partecipanti
-                        lezione.getUtentiInvitati().forEach(elem -> lezione.getUtentiPartecipanti().add(elem));
-                    }
                 }
                 // Aggiorna il commento associato alla lezione
                 lezione.setCommento(request.getCommento());
@@ -182,8 +177,8 @@ public class LezioneService {
                             .id(l.getId().toString())
                             .dataLezione(l.getData().toString())
                             .statoLezione(l.getStatoLezione())
-                            .istruttore(l.getIstruttore().getEmail().toString())
-                            .iscritti(l.getUtentiInvitati())
+                            .istruttore(l.getIstruttore().getEmail())
+                            .iscritti(l.getUtenteMittente())
                             .build());
 
         }
@@ -215,7 +210,7 @@ public class LezioneService {
             lessonsResponse.add(ResponseLezione.builder()
                             .id(elem.getId().toString())
                             .dataLezione(elem.getData().toString())
-                            .iscritti(elem.getUtentiInvitati())
+                            .iscritti(elem.getUtenteMittente())
                             .statoLezione(elem.getStatoLezione())
                             .build());
         });

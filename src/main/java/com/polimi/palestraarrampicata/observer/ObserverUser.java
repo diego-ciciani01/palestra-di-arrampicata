@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class ObserverUser implements Observer{
-    //email istruttore
+    //utente
     private Utente utente;
 
     public ObserverUser(Utente utente){
@@ -14,7 +14,7 @@ public class ObserverUser implements Observer{
 
     @Override
     public void update() {
-        System.out.println("Il corso è stato aggiornato");
+        System.out.println("Il corso è stato aggiornato" + utente.getEmail());
 
     }
 }

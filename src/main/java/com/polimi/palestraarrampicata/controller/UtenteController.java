@@ -84,7 +84,7 @@ public class UtenteController {
     @PostMapping("/commenta/istruttore")
     public ResponseEntity<?> creaCommento(@Valid @RequestBody RequestCommento requestCommento, HttpServletRequest request){
         try{
-             ResponseCommento responseCommento =  DTOManager.ToResponseCommentoBYCommento(utenteService.creaCommento(request, requestCommento));
+             ResponseCommento responseCommento =  DTOManager.ToResponseCommentoByCommento(utenteService.creaCommento(request, requestCommento));
             return ResponseEntity.ok(responseCommento);
         }catch (IllegalStateException | EntityNotFoundException e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -95,7 +95,6 @@ public class UtenteController {
      * Crea una nuova valutazione da parte di un utente su un istruttore.
      *
      * @param requestValutazione Oggetto contenente i dettagli della valutazione da creare.
-     * @param result BindingResult per la validazione dei dati di input.
      * @param request HttpServletRequest utilizzato per ottenere l'utente autenticato.
      * @return ResponseEntity contenente il risultato dell'operazione di creazione della valutazione.
      */

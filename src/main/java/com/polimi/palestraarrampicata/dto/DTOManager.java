@@ -37,7 +37,7 @@ public class DTOManager {
                 .build();
 
     }
-    public static ResponseCommento ToResponseCommentoBYCommento(Commento commento){
+    public static ResponseCommento ToResponseCommentoByCommento(Commento commento){
         return ResponseCommento.builder()
                 .id(commento.getId().toString())
                 .emailIstruttore(commento.getIstruttoreCommentato().getEmail())

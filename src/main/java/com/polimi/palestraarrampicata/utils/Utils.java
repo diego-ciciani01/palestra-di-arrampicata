@@ -20,9 +20,8 @@ public class Utils {
     public static final String LOCALDATETIME = "^(\\d{2})/(\\d{2})/(\\d{4}) (\\d{2}):(\\d{2})$";
     public static final String LOCALTIME = "^([01][0-9]|2[0-3]):[0-5][0-9]$";
     public  static final  String REGEX_TELEFONO =  "^(\\((00|\\+)39\\)|(00|\\+)39)?(38[890]|34[4-90]|36[680]|33[13-90]|32[89]|35[01]|37[019])(\\s?\\d{3}\\s?\\d{3,4}|\\d{6,7})$";
-    //public  static final  String REGEX_TELEFONO = "\"^(([+])39)?((3[1-6][0-9]))(\\d{7})$\"gm";
-
     public  static  final  String ERROR_TELEFONO = "Formato telefono non valido, deve seguire gli standard per i telefoni italiani";
+
     public static final String ERROR_EMAIL = "Formato mail non valido";
     public static final String ERROR_PASSWORD = "La password deve contenere almeno 8 caratteri, una lettera e una cifra.";
     public static final String ERROR_LOCALDATE = "La data deve essere nel formato dd/MM/yyyy";

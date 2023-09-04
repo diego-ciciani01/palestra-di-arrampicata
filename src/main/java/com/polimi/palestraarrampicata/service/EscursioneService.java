@@ -246,10 +246,8 @@ public class EscursioneService {
         escursioniRepo.save(escursione);
 
         // verifico che gli osservatori siano stati notificati
-        for(Observer o: main.getObserverList()){
-            o.update();
-        }
 
+        main.notyObservers();
         return "escursione modificata correttamente";
 
     }

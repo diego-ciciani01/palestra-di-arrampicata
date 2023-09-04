@@ -228,7 +228,7 @@ public class UtenteService implements UserDetailsService {
 
         //controllo se è presente del contenuto nei commenti dell'utente
         if(commentiUtente==null || commentiUtente.isEmpty())
-            throw new EntityNotFoundException("non ci sono commenti fatti verso l'istuttore " + istruttore.getEmail());
+            throw new EntityNotFoundException("dall'utente loggato non ci sono commenti fatti verso l'istuttore " + istruttore.getEmail());
 
         List<ResponseCommento> responseCommenti = new ArrayList<>();
         for(Commento c: commentiUtente){

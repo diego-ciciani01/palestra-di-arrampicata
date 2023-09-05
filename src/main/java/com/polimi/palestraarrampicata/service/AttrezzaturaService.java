@@ -262,12 +262,10 @@ public class AttrezzaturaService {
         for(Attrezzatura attrezzatura:attrezzi) {
             // Itera attraverso i noleggi dell'attrezzatura.
             for (Noleggio noleggio : attrezzatura.getNoleggi()) {
-                // Verifica se il noleggio non è ancora terminato e lo aggiunge alla lista.
-                if (noleggio.getDataNoleggio().isAfter(LocalDateTime.now()))
-                    noleggi.add(noleggio);
+                // Verifica se il noleggio non è ancora terminato, se terminato lo rimuovo dalla lista.
+                if (!noleggio.getDataNoleggio().isAfter(LocalDateTime.now()))
+                   attrezzatura.getNoleggi().remove(noleggio);
             }
-            // operazione nelle classi di repository
-            attrezzatura.setNoleggi(noleggi);
             attrezziCercati.add(attrezzatura);
         }
 

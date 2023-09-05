@@ -77,26 +77,29 @@ public class DTOManager {
 
     public static List<ResponseAttrezzatura> listAttrezzatureWithNoleggio(List<Attrezzatura> attrezzi){
         List<ResponseAttrezzatura> listAttrezzatura = new ArrayList<>();
-        List<ResponseNoleggio> listNoleggio = new ArrayList<>();
-        for(Attrezzatura attrezzo: attrezzi){
-            for(Noleggio noleggio: attrezzo.getNoleggi()){
-                listNoleggio.add(
-                        ResponseNoleggio.builder()
-                                .id(noleggio.getId().toString())
-                                .dataInizioNoleggio(noleggio.getDataNoleggio().toString())
-                                .dataFineNoleggio(noleggio.getDataFineNoleggio().toString())
-                                .build());
+        for (Attrezzatura attrezzatura : attrezzi) {
+            List<ResponseNoleggio> listNoleggio = new ArrayList<>();
+            for (int i = 0; i < attrezzatura.getNoleggi().size(); i++) {
+                Noleggio noleggio = attrezzatura.getNoleggi().get(i);
+
+                ResponseNoleggio responseNoleggio = ResponseNoleggio.builder()
+                        .dataInizioNoleggio(noleggio.getDataNoleggio().toString())
+                        .dataFineNoleggio(noleggio.getDataFineNoleggio().toString())
+                        .id(noleggio.getId().toString())
+                        .build();
+
+                listNoleggio.add(responseNoleggio);
             }
-            listAttrezzatura.add(
-                    ResponseAttrezzatura.builder()
-                            .id(attrezzo.getId().toString())
-                            .nomePalestraAppartenente(attrezzo.getAttrezziPalestra().getNome())
-                            .taglia(attrezzo.getNomeTaglia())
-                            .nomeAttrezzo(attrezzo.getNomeAttrezzatura())
-                            .disponibilita(attrezzo.getDisponibilita())
-                            .noleggi(listNoleggio)
-                            .build());
+            ResponseAttrezzatura responseAttrezzatura = ResponseAttrezzatura.builder()
+                    .nomeAttrezzo(attrezzatura.getNomeAttrezzatura())
+                    .nomePalestraAppartenente(attrezzatura.getAttrezziPalestra().getNome())
+                    .noleggi(listNoleggio)
+                    .id(attrezzatura.getId().toString())
+                    .build();
+
+            listAttrezzatura.add(responseAttrezzatura);
         }
+
         return listAttrezzatura;
     }
 
